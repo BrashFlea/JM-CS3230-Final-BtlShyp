@@ -27,7 +27,7 @@ public class userInterface extends JFrame {
     Container pane = getContentPane();
     pane.setLayout(new GridLayout(rows, cols));
     for (int i = 0; i < 25; i++) {
-      JButton button = new JButton(Integer.toString(i));
+      JButton button = new JButton(Integer.toString(i + 1));
       pane.add(button);
     }
     pane.setVisible(true); 
