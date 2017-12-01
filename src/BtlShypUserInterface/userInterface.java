@@ -7,65 +7,45 @@ import javax.swing.*;
 import main.btlshyp.model.Coordinate;
 import main.btlshyp.view.View;
 
-import net.miginfocom.swing.MigLayout;;
+import net.miginfocom.swing.MigLayout;
 
 public class userInterface extends View {
-  
-  private static final long serialVersionUID = 1L;
-  private JFrame playAgain;
-  JPanel panel = new JPanel(new MigLayout());
 
-  private void initUI() {
-    //displayMainArea();
-    checkForPlayagain();
-  }
-  
-  private void displayMainArea() {
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-    setPreferredSize(new Dimension(425,545));
-    setLayout(new GridLayout(5,5));
-    setVisible(true);
-    setTitle("Jonathan Mirabile - BtlShyp");
-    setResizable(true);
-    
+  private static final long serialVersionUID = 1L;
+
+  private static JPanel shipGridArea() {
+    JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
+
     int rows = 5;
     int cols = 5;
-    Container pane = getContentPane();
-    pane.setLayout(new GridLayout(rows, cols));
-    
-    for (int i = 0; i < 5; i++) {
-      for (int j = 0; j < 5; i++) {
-        AttackButton button = new AttackButton(new Coordinate(i,j), 
-            new ActionListener() {
-              public void actionPerformed(ActionEvent e) 
-              {
-                 //sendAttack(e.getSource());
-              }
-          });
-        pane.add(button);
-      }
 
+    for (int i = 0; i < 5; i++) {
+      for(int j = 0; j < 5; j++) {
+        JButton button = new JButton(Integer.toString(i+1));
+        if (j == 4) {
+          shipGrid.add(button, "wrap, grow"); 
+        }
+        else {
+          shipGrid.add(button, "grow");
+        }
+
+      }
     }
-    pane.setVisible(true); 
+    return shipGrid;
   }
- 
-  
-  
+
   private static JPanel checkForPlayagain() {
     JPanel playAgain = new JPanel(new MigLayout());
     playAgain.add(new JLabel("Would you like to play again?"), "wrap");
     playAgain.add(new JButton("Yes"));
     JButton noButton = new JButton("No");
-    
-    
-
 
     noButton.addActionListener(new ActionListener() {
-    public void actionPerformed(ActionEvent evt) {
+      public void actionPerformed(ActionEvent evt) {
         System.exit(0);
       }
     });
-    
+
     playAgain.add(noButton);
 
     /*
@@ -74,24 +54,24 @@ public class userInterface extends View {
         exitGame();
       }
     });*/
-    
+
     return playAgain;
-    
+
   }
-  
+
   private void exitGame() {
     System.exit(0);
   }
-  
+
   private void playAgain() {
     eraseBoard();
-    
+
   }
-  
+
   private void eraseBoard() {
-    
+
   }
-  
+
   public static void main(String[] args) {
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
@@ -101,15 +81,25 @@ public class userInterface extends View {
           ex.printStackTrace();
         }
 
-        JFrame frame = new JFrame("Example 01");
-        frame.getContentPane().add(checkForPlayagain());
-        frame.pack();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        /*
+        JFrame playAgainFrame = new JFrame("Example 01");
+        playAgainFrame.getContentPane().add(checkForPlayagain());
+        playAgainFrame.pack();
+        playAgainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        playAgainFrame.setVisible(true);
+        */
+         
+        JFrame shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
+        shipGridFrame.getContentPane().add(shipGridArea());
+        shipGridFrame.setPreferredSize(new Dimension(750,750));
+        shipGridFrame.pack();
+        shipGridFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        shipGridFrame.setVisible(true);
+
       }
     });
-}
-  
+  }
+
 
 } // end class
 
