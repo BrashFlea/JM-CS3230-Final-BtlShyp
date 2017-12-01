@@ -7,14 +7,17 @@ import javax.swing.*;
 import main.btlshyp.model.Coordinate;
 import main.btlshyp.view.View;
 
+import net.miginfocom.swing.MigLayout;;
+
 public class userInterface extends View {
   
   private static final long serialVersionUID = 1L;
-  private JPanel mainPanel = new JPanel();
   private JFrame playAgain;
+  JPanel panel = new JPanel(new MigLayout());
 
   private void initUI() {
-    displayMainArea();
+    //displayMainArea();
+    checkForPlayagain();
   }
   
   private void displayMainArea() {
@@ -36,7 +39,7 @@ public class userInterface extends View {
             new ActionListener() {
               public void actionPerformed(ActionEvent e) 
               {
-                 sendAttack(e.getSource());
+                 //sendAttack(e.getSource());
               }
           });
         pane.add(button);
@@ -48,31 +51,31 @@ public class userInterface extends View {
  
   
   
-  private void checkForPlayagain() {
-    playAgain = new JFrame();
-    playAgain.setLayout(new FlowLayout());
-    playAgain.setVisible(true);
-    JButton yes = new JButton("Yes");
-    JButton no = new JButton("No");
-    JLabel playAgainLabel = new JLabel("Would you like to play again?");
-    playAgain.add(yes);
-    playAgain.add(no);
+  private static JPanel checkForPlayagain() {
+    JPanel playAgain = new JPanel(new MigLayout());
+    playAgain.add(new JLabel("Would you like to play again?"), "wrap");
+    playAgain.add(new JButton("Yes"));
+    JButton noButton = new JButton("No");
     
-    no.addActionListener(new ActionListener() {
+    
+
+
+    noButton.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
         System.exit(0);
       }
     });
+    
+    playAgain.add(noButton);
 
+    /*
     yes.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
         exitGame();
       }
-    });
+    });*/
     
-    playAgain.setTitle("Play Again?");
-    playAgain.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    playAgain.pack();
+    return playAgain;
     
   }
   
@@ -90,10 +93,22 @@ public class userInterface extends View {
   }
   
   public static void main(String[] args) {
-    userInterface test = new userInterface();
-    test.initUI();
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        try {
+          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
 
-  }
+        JFrame frame = new JFrame("Example 01");
+        frame.getContentPane().add(checkForPlayagain());
+        frame.pack();
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+      }
+    });
+}
   
 
 } // end class
