@@ -16,19 +16,19 @@ public class userInterface extends View {
   private static JPanel shipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
 
-    int rows = 5;
-    int cols = 5;
+    String[] colLabels = {"A","B","C","D","E"};
+    String buttonLabel = "";
 
     for (int i = 0; i < 5; i++) {
       for(int j = 0; j < 5; j++) {
-        JButton button = new JButton(Integer.toString(i+1));
+        buttonLabel = colLabels[j] + Integer.toString(i+1);
+        JButton button = new JButton(buttonLabel);
         if (j == 4) {
           shipGrid.add(button, "wrap, grow"); 
         }
         else {
           shipGrid.add(button, "grow");
         }
-
       }
     }
     return shipGrid;
