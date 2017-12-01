@@ -4,7 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class userInterface extends JFrame {
+import main.btlshyp.model.Coordinate;
+import main.btlshyp.view.View;
+
+public class userInterface extends View {
   
   private static final long serialVersionUID = 1L;
   private JPanel mainPanel = new JPanel();
@@ -26,12 +29,24 @@ public class userInterface extends JFrame {
     int cols = 5;
     Container pane = getContentPane();
     pane.setLayout(new GridLayout(rows, cols));
-    for (int i = 0; i < 25; i++) {
-      JButton button = new JButton(Integer.toString(i + 1));
-      pane.add(button);
+    
+    for (int i = 0; i < 5; i++) {
+      for (int j = 0; j < 5; i++) {
+        AttackButton button = new AttackButton(new Coordinate(i,j), 
+            new ActionListener() {
+              public void actionPerformed(ActionEvent e) 
+              {
+                 sendAttack(e.getSource());
+              }
+          });
+        pane.add(button);
+      }
+
     }
     pane.setVisible(true); 
   }
+ 
+  
   
   private void checkForPlayagain() {
     playAgain = new JFrame();
