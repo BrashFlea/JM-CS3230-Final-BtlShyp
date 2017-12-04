@@ -5,14 +5,16 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import main.btlshyp.model.*;
 
-public class AttackButton extends JButton {
+public class BtlButton extends JButton {
   private Coordinate coord;
   
-  public AttackButton(Coordinate coord, ActionListener e) {
+  public BtlButton(Coordinate coord, ActionListener e) {
     this.coord = coord;
     this.actionListener = e;
     
   }
+  
+  
 
   
   

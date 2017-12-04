@@ -12,6 +12,9 @@ import net.miginfocom.swing.MigLayout;
 public class userInterface extends View {
 
   private static final long serialVersionUID = 1L;
+  private static final Dimension BUTTON_SIZE = new Dimension(120, 120);
+  private static final Dimension CHAT_IINPUT_SIZE = new Dimension(250, 150);
+  private static final Dimension CHAT_OUTPUT_SIZE = new Dimension(250, 450);
 
   private static JPanel playerShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
@@ -24,6 +27,7 @@ public class userInterface extends View {
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         //TODO Change to AttackButtons and pass in coordinates
         JButton button = new JButton(buttonLabel);
+        button.setPreferredSize(BUTTON_SIZE);
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -52,6 +56,8 @@ public class userInterface extends View {
       for(int j = 0; j < 5; j++) {
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         JButton button = new JButton(buttonLabel);
+        button.setPreferredSize(BUTTON_SIZE);
+        
         if (j == 4) {
           shipGrid.add(button, "wrap, grow"); 
         }
@@ -61,6 +67,25 @@ public class userInterface extends View {
       }
     }
     return shipGrid;
+  }
+  
+  private static JTextPane chatInput() {
+    JTextPane chatInput = new JTextPane();
+    chatInput.setPreferredSize(CHAT_IINPUT_SIZE);
+    
+    // Action Listener for "Enter Key"
+    
+    // Action Listener for "ALT + Enter"
+    
+    return chatInput;
+  }
+  
+  private static JTextPane chatOutput() {
+    JTextPane chatOutput = new JTextPane();
+    chatOutput.setPreferredSize(CHAT_OUTPUT_SIZE);
+    chatOutput.setEditable(false);
+    
+    return chatOutput;
   }
 
   private static JPanel checkForPlayagain() {
@@ -77,7 +102,7 @@ public class userInterface extends View {
     
     noButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
-        System.exit(0);
+        exitGame();
       }
     });
     
@@ -88,7 +113,7 @@ public class userInterface extends View {
 
   }
 
-  private void exitGame() {
+  private static void exitGame() {
     System.exit(0);
   }
 
@@ -119,10 +144,15 @@ public class userInterface extends View {
         
          
         JFrame shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
-        JPanel gridBoard = new JPanel(new MigLayout("debug"));
-        //shipGridFrame.setPreferredSize(new Dimension(750,750));
+        JPanel gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
+        JPanel chatArea = new JPanel(new MigLayout("debug, fill"));
+        
+        chatArea.add(chatOutput(), "wrap, grow");
+        chatArea.add(chatInput(), "grow");
+        
         
         gridBoard.add(playerShipGridArea());
+        gridBoard.add(chatArea, "grow");
         gridBoard.add(opponentShipGridArea());
         
         
