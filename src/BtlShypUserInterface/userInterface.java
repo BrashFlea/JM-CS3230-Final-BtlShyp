@@ -12,9 +12,14 @@ import net.miginfocom.swing.MigLayout;
 public class userInterface extends View {
 
   private static final long serialVersionUID = 1L;
-  private static final Dimension BUTTON_SIZE = new Dimension(120, 120);
+  private static final Dimension DIALOG_BUTTON_SIZE = new Dimension(60, 60);
+  private static final Dimension GAME_BUTTON_SIZE = new Dimension(120, 120);
   private static final Dimension CHAT_IINPUT_SIZE = new Dimension(250, 150);
   private static final Dimension CHAT_OUTPUT_SIZE = new Dimension(250, 450);
+  private static final Font CAMBRIA = new Font("Cambria", Font.PLAIN, 16);
+  private static final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
+  private static final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
+  private static final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
 
   private static JPanel playerShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
@@ -25,9 +30,9 @@ public class userInterface extends View {
     for (int i = 0; i < 5; i++) {
       for(int j = 0; j < 5; j++) {
         buttonLabel = colLabels[j] + Integer.toString(i+1);
-        //TODO Change to AttackButtons and pass in coordinates
+        //TODO Change to BtlButtons and pass in coordinates
         JButton button = new JButton(buttonLabel);
-        button.setPreferredSize(BUTTON_SIZE);
+        button.setPreferredSize(GAME_BUTTON_SIZE);
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -56,7 +61,7 @@ public class userInterface extends View {
       for(int j = 0; j < 5; j++) {
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         JButton button = new JButton(buttonLabel);
-        button.setPreferredSize(BUTTON_SIZE);
+        button.setPreferredSize(GAME_BUTTON_SIZE);
         
         if (j == 4) {
           shipGrid.add(button, "wrap, grow"); 
@@ -87,16 +92,28 @@ public class userInterface extends View {
     
     return chatOutput;
   }
+  
+  /*
+  private static JPanel titleHeader() {
+    JPanel titleHeader = new JPanel(new MigLayout());
+    
+  }
+  */
 
   private static JPanel checkForPlayagain() {
     JPanel playAgain = new JPanel(new MigLayout("debug, fill"));
-    playAgain.add(new JLabel("Would you like to play again?"), "wrap, center");
+    JLabel playerDialog = new JLabel("Would you like to play again?");
+    playerDialog.setFont(CAMBRIA_BIGGER);
+    playAgain.add(playerDialog, "wrap, align center");
     JButton yesButton = new JButton("Yes");
     JButton noButton = new JButton("No");
+    
+    yesButton.setPreferredSize(DIALOG_BUTTON_SIZE);
+    noButton.setPreferredSize(DIALOG_BUTTON_SIZE);
   
     yesButton.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
-        //playAgain();
+        // TODO complete playAgain() method;
       }
     });
     
@@ -136,14 +153,16 @@ public class userInterface extends View {
         }
 
         
-        JFrame playAgainFrame = new JFrame("Jonathan Mirabile - BtlShyp");
+        JFrame playAgainFrame = new JFrame("BtlShyp");
         playAgainFrame.getContentPane().add(checkForPlayagain());
+        playAgainFrame.setIconImage(BTLSHYP_ICON.getImage());
         playAgainFrame.pack();
         playAgainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         playAgainFrame.setVisible(true);
         
          
         JFrame shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
+        shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
         JPanel gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
         JPanel chatArea = new JPanel(new MigLayout("debug, fill"));
         
