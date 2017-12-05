@@ -4,9 +4,11 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import main.btlshyp.controller.Controller;
 import main.btlshyp.message.AttackResponseMessage;
 import main.btlshyp.model.Coordinate;
 import main.btlshyp.model.Ship;
+import main.btlshyp.view.DefaultView;
 import main.btlshyp.view.View;
 import main.btlshyp.view.event.AttackListener;
 import main.btlshyp.view.event.ChatEvent;
@@ -27,14 +29,14 @@ public class userInterface extends View {
   private static final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
   private static final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
   
-  private static JTextPane chatInput;
-  private static JTextPane chatOutput;
+  private static JTextArea chatInput;
+  private static JTextArea chatOutput;
 
   public userInterface() {
     initUI();
   }
   
-  private static void initUI() {
+  private void initUI() {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (Exception ex) {
@@ -72,7 +74,7 @@ public class userInterface extends View {
   }
   
   
-  private static JPanel playerShipGridArea() {
+  private JPanel playerShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
 
     String[] colLabels = {"A","B","C","D","E"};
@@ -102,7 +104,7 @@ public class userInterface extends View {
     return shipGrid;
   }
   
-  private static JPanel opponentShipGridArea() {
+  private JPanel opponentShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
     
     String[] colLabels = {"A","B","C","D","E"};
@@ -125,8 +127,8 @@ public class userInterface extends View {
     return shipGrid;
   }
   
-  private static JTextPane chatInput() {
-    chatInput = new JTextPane();
+  private JTextArea chatInput() {
+    chatInput = new JTextArea();
     chatInput.setPreferredSize(CHAT_IINPUT_SIZE);
 
     // Action Listener for "Enter"
@@ -150,22 +152,22 @@ public class userInterface extends View {
     return chatInput;
   }
   
-  private static JButton sendButton() {
+  private JButton sendButton() {
     JButton sendButton = new JButton("Send");
     sendButton.setPreferredSize(SEND_BUTTON_SIZE);
     
-   // Action Listener for clicked
-    sendButton.addMouseListener(new MouseAdapter() {
-      public void mouseClicked(MouseEvent e) {
-        //sendChat(e);
+    sendButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        sendChat(e);
       }
-  });
+    });
     
     return sendButton;
   }
   
-  private static JTextPane chatOutput() {
-    chatOutput = new JTextPane();
+  private JTextArea chatOutput() {
+    chatOutput = new JTextArea();
     chatOutput.setPreferredSize(CHAT_OUTPUT_SIZE);
     chatOutput.setEditable(false);
     
@@ -173,13 +175,13 @@ public class userInterface extends View {
   }
   
   /*
-  private static JPanel titleHeader() {
+  private JPanel titleHeader() {
     JPanel titleHeader = new JPanel(new MigLayout());
     
   }
   */
 
-  private static JPanel checkForPlayagain() {
+  private JPanel checkForPlayagain() {
     JPanel playAgain = new JPanel(new MigLayout("debug, fill"));
     JLabel playerDialog = new JLabel("Would you like to play again?");
     playerDialog.setFont(CAMBRIA_BIGGER);
@@ -209,7 +211,7 @@ public class userInterface extends View {
 
   }
 
-  private static void exitGame() {
+  private void exitGame() {
     System.exit(0);
   }
 
@@ -234,6 +236,10 @@ public class userInterface extends View {
     this.attackListener = listener;
   }
   
+  public void display(String message) {
+    chatOutput.append(message + "\n");
+  }
+  
   /**
    * Displays the results of your attack attempt on your opponent. Analogous to putting a pin in the 
    * vertical portion of the traditional board game.
@@ -254,7 +260,9 @@ public class userInterface extends View {
    * Displays community chat messages that are broadcast to all
    * @param chat
    */
-  public void displayChat(String user, String chat) {};
+  public void displayChat(String user, String chat) {
+    display(user + ": " + chat);
+  };
   
   /**
    * Displays notifications unique to the user, such as "Please re-place your boats", "Waiting for opponent", etc
@@ -270,6 +278,7 @@ public class userInterface extends View {
    * Emits ChatEvent for controller to catch which includes a string message to send out to the world
    */
   
+  @Override
   public void sendChat(ActionEvent e) {
     
     String chat = chatInput.getText();
@@ -322,6 +331,9 @@ public class userInterface extends View {
 
   public static void main(String[] args) {
     userInterface testUserInterface = new userInterface();
+    Controller controller = new Controller(testUserInterface);
+    controller.init();
+    controller.playGame();
     
     
 
