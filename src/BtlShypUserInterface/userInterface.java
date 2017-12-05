@@ -22,8 +22,8 @@ public class userInterface extends View {
   private static final Dimension SEND_BUTTON_SIZE = new Dimension(250, 35);
   private static final Dimension DIALOG_BUTTON_SIZE = new Dimension(60, 60);
   private static final Dimension GAME_BUTTON_SIZE = new Dimension(120, 120);
-  private static final Dimension CHAT_IINPUT_SIZE = new Dimension(250, 115);
-  private static final Dimension CHAT_OUTPUT_SIZE = new Dimension(250, 450);
+  private static final Dimension CHAT_IINPUT_SIZE = new Dimension(275, 115);
+  private static final Dimension CHAT_OUTPUT_SIZE = new Dimension(275, 450);
   private static final Font CAMBRIA = new Font("Cambria", Font.PLAIN, 16);
   private static final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
   private static final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
@@ -160,6 +160,7 @@ public class userInterface extends View {
       @Override
       public void actionPerformed(ActionEvent e) {
         sendChat(e);
+        chatInput.setText("");
       }
     });
     
@@ -224,6 +225,7 @@ public class userInterface extends View {
 
   }
   
+  
   public void registerChatListener(ChatListener listener) {
     this.chatListener = listener;
   }
@@ -235,6 +237,7 @@ public class userInterface extends View {
   public void registerAttackListener(AttackListener listener) {
     this.attackListener = listener;
   }
+  
   
   public void display(String message) {
     chatOutput.append(message + "\n");
@@ -333,9 +336,10 @@ public class userInterface extends View {
   public void resetGame() {};
 
   public static void main(String[] args) {
-    userInterface testUserInterface = new userInterface();
-    Controller controller = new Controller(testUserInterface);
+    userInterface btlshypgui = new userInterface();
+    Controller controller = new Controller(btlshypgui);
     controller.init();
+    controller.playGame();
     
     
 
