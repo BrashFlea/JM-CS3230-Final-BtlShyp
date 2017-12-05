@@ -4,23 +4,70 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import main.btlshyp.message.AttackResponseMessage;
 import main.btlshyp.model.Coordinate;
+import main.btlshyp.model.Ship;
 import main.btlshyp.view.View;
-
+import main.btlshyp.view.event.AttackListener;
+import main.btlshyp.view.event.ChatListener;
+import main.btlshyp.view.event.SetShipListener;
 import net.miginfocom.swing.MigLayout;
 
 public class userInterface extends View {
 
   private static final long serialVersionUID = 1L;
+  private static final Dimension SEND_BUTTON_SIZE = new Dimension(250, 35);
   private static final Dimension DIALOG_BUTTON_SIZE = new Dimension(60, 60);
   private static final Dimension GAME_BUTTON_SIZE = new Dimension(120, 120);
-  private static final Dimension CHAT_IINPUT_SIZE = new Dimension(250, 150);
+  private static final Dimension CHAT_IINPUT_SIZE = new Dimension(250, 115);
   private static final Dimension CHAT_OUTPUT_SIZE = new Dimension(250, 450);
   private static final Font CAMBRIA = new Font("Cambria", Font.PLAIN, 16);
   private static final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
   private static final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
   private static final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
 
+  public userInterface() {
+    initUI();
+  }
+  
+  private static void initUI() {
+    try {
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+
+    
+    JFrame playAgainFrame = new JFrame("BtlShyp");
+    playAgainFrame.getContentPane().add(checkForPlayagain());
+    playAgainFrame.setIconImage(BTLSHYP_ICON.getImage());
+    playAgainFrame.pack();
+    playAgainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    playAgainFrame.setVisible(true);
+    
+     
+    JFrame shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
+    shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
+    JPanel gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
+    JPanel chatArea = new JPanel(new MigLayout("debug, fill"));
+    
+    chatArea.add(chatOutput(), "wrap, grow");
+    chatArea.add(chatInput(), "wrap, grow");
+    chatArea.add(sendButton(), "grow");
+    
+    
+    gridBoard.add(playerShipGridArea());
+    gridBoard.add(chatArea, "grow");
+    gridBoard.add(opponentShipGridArea());
+    
+    
+    shipGridFrame.add(gridBoard);
+    shipGridFrame.pack();
+    shipGridFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    shipGridFrame.setVisible(true);
+  }
+  
+  
   private static JPanel playerShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
 
@@ -77,12 +124,21 @@ public class userInterface extends View {
   private static JTextPane chatInput() {
     JTextPane chatInput = new JTextPane();
     chatInput.setPreferredSize(CHAT_IINPUT_SIZE);
-    
+   
     // Action Listener for "Enter Key"
     
     // Action Listener for "ALT + Enter"
     
     return chatInput;
+  }
+  
+  private static JButton sendButton() {
+    JButton sendButton = new JButton("Send");
+    sendButton.setPreferredSize(SEND_BUTTON_SIZE);
+    
+   // Action Listener for clicked
+    
+    return sendButton;
   }
   
   private static JTextPane chatOutput() {
@@ -142,47 +198,102 @@ public class userInterface extends View {
   private void eraseBoard() {
 
   }
+  
+  public void registerChatListener(ChatListener listener) {
+    this.chatListener = listener;
+  }
+
+  public void registerSetShipListener(SetShipListener listener) {
+    this.setShipListener = listener;
+  }
+
+  public void registerAttackListener(AttackListener listener) {
+    this.attackListener = listener;
+  }
+  
+  /**
+   * Displays the results of your attack attempt on your opponent. Analogous to putting a pin in the 
+   * vertical portion of the traditional board game.
+   * @param hitOrMiss
+   * @param coordinate
+   */
+  public void displayAttack(AttackResponseMessage message) {};
+  
+  /**
+   * Displays the results of an opponent's attack on you. Analogous to putting a pin in a boat
+   * or the sea on the horizontal part of the traditional board game.
+   * @param hitOrMiss
+   * @param coordinate
+   */
+  public void displayOpponentAttack(AttackResponseMessage message) {};
+  
+  /**
+   * Displays community chat messages that are broadcast to all
+   * @param chat
+   */
+  public void displayChat(String user, String chat) {};
+  
+  /**
+   * Displays notifications unique to the user, such as "Please re-place your boats", "Waiting for opponent", etc
+   */
+  public void displayNotification(String text) {};
+  
+  /**
+   * Sends controller a coordinate to attack
+   */
+  public void sendAttack(ActionEvent e) {};
+  
+  /** 
+   * Emits ChatEvent for controller to catch which includes a string message to send out to the world
+   */
+  public void sendChat(ActionEvent e) {};
+  
+  /**
+   * Prompts user for name and returns to controller
+   */
+  public String getUsername() {
+     return JOptionPane.showInputDialog(null, "Enter username: ");
+    }
+  
+  /** 
+   * Unlocks the inputs on the game portion of the gui
+   * Prompts user for attack
+   */
+  public void yourTurn() {};
+  
+  /**
+   * Locks game gui, displays wait message
+   */
+  public void notYourTurn() {};
+  
+  /**
+   * Receives ship from controller for user to place
+   * @param ship
+   */
+  public void setShip(Ship ship) {
+    this.shipToPlace = ship;
+  };
+  
+  /**
+   *Displays a properly placed ship in our board
+   * @param ship
+   */
+  public void displayShip(Ship ship) {};
+  
+  /**
+   * Collects coordinates into a ship and emits a setShipEvent
+   */
+  public void attemptSetShip(ActionEvent e) {};
+  /**
+   * Resets gui to gameless state
+   */
+  public void resetGame() {};
 
   public static void main(String[] args) {
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        try {
-          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ex) {
-          ex.printStackTrace();
-        }
+    userInterface testUserInterface = new userInterface();
+    
+    
 
-        
-        JFrame playAgainFrame = new JFrame("BtlShyp");
-        playAgainFrame.getContentPane().add(checkForPlayagain());
-        playAgainFrame.setIconImage(BTLSHYP_ICON.getImage());
-        playAgainFrame.pack();
-        playAgainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        playAgainFrame.setVisible(true);
-        
-         
-        JFrame shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
-        shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
-        JPanel gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
-        JPanel chatArea = new JPanel(new MigLayout("debug, fill"));
-        
-        chatArea.add(chatOutput(), "wrap, grow");
-        chatArea.add(chatInput(), "grow");
-        
-        
-        gridBoard.add(playerShipGridArea());
-        gridBoard.add(chatArea, "grow");
-        gridBoard.add(opponentShipGridArea());
-        
-        
-        shipGridFrame.add(gridBoard);
-        shipGridFrame.pack();
-        shipGridFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        shipGridFrame.setVisible(true);
-        
-
-      }
-    });
   }
 
 
