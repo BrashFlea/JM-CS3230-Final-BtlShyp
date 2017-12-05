@@ -260,6 +260,7 @@ public class userInterface extends View {
    * Displays community chat messages that are broadcast to all
    * @param chat
    */
+  @Override
   public void displayChat(String user, String chat) {
     display(user + ": " + chat);
   };
@@ -267,7 +268,10 @@ public class userInterface extends View {
   /**
    * Displays notifications unique to the user, such as "Please re-place your boats", "Waiting for opponent", etc
    */
-  public void displayNotification(String text) {};
+  @Override
+  public void displayNotification(String text) {
+    display(text);
+  };
   
   /**
    * Sends controller a coordinate to attack
@@ -277,7 +281,6 @@ public class userInterface extends View {
   /** 
    * Emits ChatEvent for controller to catch which includes a string message to send out to the world
    */
-  
   @Override
   public void sendChat(ActionEvent e) {
     
@@ -333,7 +336,6 @@ public class userInterface extends View {
     userInterface testUserInterface = new userInterface();
     Controller controller = new Controller(testUserInterface);
     controller.init();
-    controller.playGame();
     
     
 
