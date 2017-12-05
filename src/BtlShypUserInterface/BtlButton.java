@@ -6,18 +6,15 @@ import javax.swing.JButton;
 import main.btlshyp.model.*;
 
 public class BtlButton extends JButton {
-  private Coordinate coord;
+  private Coordinate buttonCoordinate;
   
-  public BtlButton(Coordinate coord, ActionListener e) {
-    this.coord = coord;
-    this.actionListener = e;
-    
+  public BtlButton(String buttonText, Coordinate coord) {
+    super(buttonText);
+    this.buttonCoordinate = coord;
   }
   
+  public Coordinate getCoordinates() {
+    return this.buttonCoordinate;
+  }
   
-
-  
-  
-  
-
 }

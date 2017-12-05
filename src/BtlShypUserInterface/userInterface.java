@@ -22,8 +22,8 @@ public class userInterface extends View {
   private static final Dimension SEND_BUTTON_SIZE = new Dimension(250, 35);
   private static final Dimension DIALOG_BUTTON_SIZE = new Dimension(60, 60);
   private static final Dimension GAME_BUTTON_SIZE = new Dimension(120, 120);
-  private static final Dimension CHAT_IINPUT_SIZE = new Dimension(275, 115);
-  private static final Dimension CHAT_OUTPUT_SIZE = new Dimension(275, 450);
+  private static final Dimension CHAT_INPUT_SIZE = new Dimension(300, 115);
+  private static final Dimension CHAT_OUTPUT_SIZE = new Dimension(300, 450);
   private static final Font CAMBRIA = new Font("Cambria", Font.PLAIN, 16);
   private static final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
   private static final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
@@ -56,8 +56,9 @@ public class userInterface extends View {
     shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
     JPanel gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
     JPanel chatArea = new JPanel(new MigLayout("debug, fill"));
+    JScrollPane chatOutputScrollbar = new JScrollPane(chatOutput(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     
-    chatArea.add(chatOutput(), "wrap, grow");
+    chatArea.add(chatOutputScrollbar, "wrap, growx");
     chatArea.add(chatInput(), "wrap, grow");
     chatArea.add(sendButton(), "grow");
     
@@ -82,14 +83,14 @@ public class userInterface extends View {
 
     for (int i = 0; i < 5; i++) {
       for(int j = 0; j < 5; j++) {
+        Coordinate currentLocation = new Coordinate(i,j);
         buttonLabel = colLabels[j] + Integer.toString(i+1);
-        //TODO Change to BtlButtons and pass in coordinates
-        JButton button = new JButton(buttonLabel);
+        BtlButton button = new BtlButton(buttonLabel, currentLocation);
         button.setPreferredSize(GAME_BUTTON_SIZE);
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            //button.setText("P");          
+            displayNotification("Button at " + button.getCoordinates() + " pressed on playerShipGridArea");         
           }
         });
           
@@ -112,9 +113,16 @@ public class userInterface extends View {
 
     for (int i = 0; i < 5; i++) {
       for(int j = 0; j < 5; j++) {
+        Coordinate currentLocation = new Coordinate(i,j);
         buttonLabel = colLabels[j] + Integer.toString(i+1);
-        JButton button = new JButton(buttonLabel);
+        BtlButton button = new BtlButton(buttonLabel, currentLocation);
         button.setPreferredSize(GAME_BUTTON_SIZE);
+        
+        button.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            displayNotification("Button at " + button.getCoordinates() + " pressed on opponentShipGridArea");         
+          }
+        });
         
         if (j == 4) {
           shipGrid.add(button, "wrap, grow"); 
@@ -129,7 +137,7 @@ public class userInterface extends View {
   
   private JTextArea chatInput() {
     chatInput = new JTextArea();
-    chatInput.setPreferredSize(CHAT_IINPUT_SIZE);
+    chatInput.setPreferredSize(CHAT_INPUT_SIZE);
 
     // Action Listener for "Enter"
     chatInput.addKeyListener(new KeyAdapter() {
@@ -265,7 +273,12 @@ public class userInterface extends View {
    */
   @Override
   public void displayChat(String user, String chat) {
-    display(user + ": " + chat);
+    if (user != null) {
+      display(user + ": " + chat);
+    }
+    else {
+      displayNotification(chat);
+    }
   };
   
   /**
@@ -286,7 +299,6 @@ public class userInterface extends View {
    */
   @Override
   public void sendChat(ActionEvent e) {
-    
     String chat = chatInput.getText();
     ChatEvent chatEvent = new ChatEvent(this, chat);
     if (chatListener != null) {
@@ -338,8 +350,8 @@ public class userInterface extends View {
   public static void main(String[] args) {
     userInterface btlshypgui = new userInterface();
     Controller controller = new Controller(btlshypgui);
-    controller.init();
-    controller.playGame();
+    //controller.init();
+    //controller.playGame();
     
     
 
