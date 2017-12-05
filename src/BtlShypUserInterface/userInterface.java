@@ -9,6 +9,7 @@ import main.btlshyp.model.Coordinate;
 import main.btlshyp.model.Ship;
 import main.btlshyp.view.View;
 import main.btlshyp.view.event.AttackListener;
+import main.btlshyp.view.event.ChatEvent;
 import main.btlshyp.view.event.ChatListener;
 import main.btlshyp.view.event.SetShipListener;
 import net.miginfocom.swing.MigLayout;
@@ -25,6 +26,9 @@ public class userInterface extends View {
   private static final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
   private static final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
   private static final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
+  
+  private static JTextPane chatInput;
+  private static JTextPane chatOutput;
 
   public userInterface() {
     initUI();
@@ -122,13 +126,27 @@ public class userInterface extends View {
   }
   
   private static JTextPane chatInput() {
-    JTextPane chatInput = new JTextPane();
+    chatInput = new JTextPane();
     chatInput.setPreferredSize(CHAT_IINPUT_SIZE);
-   
-    // Action Listener for "Enter Key"
-    
+
+    // Action Listener for "Enter"
+    chatInput.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        if((e.getKeyCode() == KeyEvent.VK_ENTER)) {
+          //sendChat(e);
+        }
+      }
+    });
+
     // Action Listener for "ALT + Enter"
-    
+    chatInput.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        if((e.getKeyCode() == KeyEvent.VK_ENTER && e.getModifiers() == KeyEvent.CTRL_MASK)) {
+          //sendChat(e);
+        }
+      }
+    });
+
     return chatInput;
   }
   
@@ -137,12 +155,17 @@ public class userInterface extends View {
     sendButton.setPreferredSize(SEND_BUTTON_SIZE);
     
    // Action Listener for clicked
+    sendButton.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        //sendChat(e);
+      }
+  });
     
     return sendButton;
   }
   
   private static JTextPane chatOutput() {
-    JTextPane chatOutput = new JTextPane();
+    chatOutput = new JTextPane();
     chatOutput.setPreferredSize(CHAT_OUTPUT_SIZE);
     chatOutput.setEditable(false);
     
@@ -246,7 +269,15 @@ public class userInterface extends View {
   /** 
    * Emits ChatEvent for controller to catch which includes a string message to send out to the world
    */
-  public void sendChat(ActionEvent e) {};
+  
+  public void sendChat(ActionEvent e) {
+    
+    String chat = chatInput.getText();
+    ChatEvent chatEvent = new ChatEvent(this, chat);
+    if (chatListener != null) {
+      chatListener.chatEventOccurred(chatEvent);
+    }
+  };
   
   /**
    * Prompts user for name and returns to controller
