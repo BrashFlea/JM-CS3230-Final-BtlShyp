@@ -2,30 +2,38 @@ package BtlShypUserInterface;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 import main.btlshyp.controller.Controller;
 import main.btlshyp.message.AttackResponseMessage;
 import main.btlshyp.model.Coordinate;
 import main.btlshyp.model.Ship;
+import main.btlshyp.model.ShipType;
 import main.btlshyp.view.View;
 import main.btlshyp.view.event.AttackListener;
 import main.btlshyp.view.event.ChatEvent;
 import main.btlshyp.view.event.ChatListener;
+import main.btlshyp.view.event.SetShipEvent;
 import main.btlshyp.view.event.SetShipListener;
 import net.miginfocom.swing.MigLayout;
 
 public class userInterface extends View {
 
-  private static final long serialVersionUID = 1L;
-  private static final Font CAMBRIA = new Font("Cambria", Font.PLAIN, 16);
-  private static final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
-  private static final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
-  private static final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
+  private final long serialVersionUID = 1L;
+  private final Font CAMBRIA = new Font("Cambria", Font.PLAIN, 16);
+  private final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
+  private final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
+  private final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
   
-  private static JTextArea chatInput;
-  private static JTextArea chatOutput;
-  private static JScrollPane chatOutputScrollbar;
+  private JTextArea chatInput;
+  private JTextArea chatOutput;
+  private JScrollPane chatOutputScrollbar;
+  
+  private ArrayList<Coordinate> shipCoordinates = new ArrayList<Coordinate>();
+  private Ship shipToPlace = null;
+
 
   public userInterface() {
     initUI();
@@ -84,7 +92,7 @@ public class userInterface extends View {
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            displayNotification("Button at " + button.getCoordinates() + " pressed on playerShipGridArea");         
+            setShipCoordinates(button);         
           }
         });
           
@@ -113,7 +121,7 @@ public class userInterface extends View {
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            displayNotification("Button at " + button.getCoordinates() + " pressed on opponentShipGridArea");         
+            sendAttack(e);         
           }
         });
         
@@ -272,7 +280,9 @@ public class userInterface extends View {
   /**
    * Sends controller a coordinate to attack
    */
-  public void sendAttack(ActionEvent e) {};
+  public void sendAttack(ActionEvent e) {
+    
+  };
   
   /** 
    * Emits ChatEvent for controller to catch which includes a string message to send out to the world
@@ -297,41 +307,76 @@ public class userInterface extends View {
    * Unlocks the inputs on the game portion of the gui
    * Prompts user for attack
    */
+  @Override
   public void yourTurn() {};
   
   /**
    * Locks game gui, displays wait message
    */
+  @Override
   public void notYourTurn() {};
   
   /**
    * Receives ship from controller for user to place
    * @param ship
    */
+  @Override
   public void setShip(Ship ship) {
-    this.shipToPlace = ship;
+    display("Please place this " + ship.getShipType());
+    shipToPlace = ship;
+    shipCoordinates.clear();
   };
   
   /**
-   *Displays a properly placed ship in our board
+   * Displays a properly placed ship in our board
    * @param ship
    */
+  @Override
   public void displayShip(Ship ship) {};
+  
+  /**
+   * Extract the coordinates from a BtlButton ship placement event
+   * @param BtlButton
+   */
+  public void setShipCoordinates(BtlButton shipPlacedButton) {
+    Coordinate attemptedPlacement = shipPlacedButton.getCoordinates();
+    final ActionEvent emptyAction = new ActionEvent("",0,"");
+    shipCoordinates.add(attemptedPlacement);
+    
+    if (shipCoordinates.size() == shipToPlace.getShipSize() ) {
+      attemptSetShip(emptyAction);
+    }
+    
+  };
   
   /**
    * Collects coordinates into a ship and emits a setShipEvent
    */
-  public void attemptSetShip(ActionEvent e) {};
+  @Override
+  public void attemptSetShip(ActionEvent e) {
+    Ship ship = shipToPlace;
+    
+    ship.setShipCoordinates(shipCoordinates);
+
+    if (ship != null) {
+      SetShipEvent sse = new SetShipEvent(e, ship);
+      if (setShipListener != null) {
+        setShipListener.setShipEventOccurred(sse);
+      }   
+    }
+  };
+  
   /**
    * Resets gui to gameless state
    */
+  @Override
   public void resetGame() {};
 
   public static void main(String[] args) {
     userInterface btlshypgui = new userInterface();
     Controller controller = new Controller(btlshypgui);
-    //controller.init();
-    //controller.playGame();
+    controller.init();
+    controller.playGame();
 
   }
 
