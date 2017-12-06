@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import lombok.extern.slf4j.Slf4j;
 import main.btlshyp.controller.Controller;
 import main.btlshyp.message.AttackResponseMessage;
 import main.btlshyp.model.Coordinate;
@@ -18,8 +19,11 @@ import main.btlshyp.view.event.ChatEvent;
 import main.btlshyp.view.event.ChatListener;
 import main.btlshyp.view.event.SetShipEvent;
 import main.btlshyp.view.event.SetShipListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import net.miginfocom.swing.MigLayout;
 
+@Slf4j
 public class userInterface extends View {
 
   private final long serialVersionUID = 1L;
@@ -32,12 +36,9 @@ public class userInterface extends View {
   private JTextArea chatOutput;
   private JScrollPane chatOutputScrollbar;
   
-  private ArrayList<Coordinate> shipCoordinates = new ArrayList<Coordinate>();
-
-  private Ship shipToPlace;
-
+  private ArrayList<Coordinate> shipCoordinatesMaster = new ArrayList<Coordinate>();
+  private Ship shipToPlace = null;
   private Coordinate attackCoordinate = new Coordinate(-1,-1);
-
 
   public userInterface() {
     initUI();
@@ -96,7 +97,7 @@ public class userInterface extends View {
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            setShipCoordinates(button);
+            setShipCoordinates(button, e);
           }
         });
           
@@ -125,7 +126,7 @@ public class userInterface extends View {
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            setAttackCoordinates(button);         
+            setAttackCoordinates(button, e);         
           }
         });
         
@@ -236,16 +237,7 @@ public class userInterface extends View {
   public void setAttackCoordinate(Coordinate attackCoordinate) {
     this.attackCoordinate = attackCoordinate;
   }
-  
-  public Ship getShipToPlace() {
-    return shipToPlace;
-  }
-
-  public void setShipToPlace(Ship shipToPlace) {
-    this.shipToPlace = shipToPlace;
-  }
-  
-  
+   
   public void display(String message) {
     chatOutput.append(message + "\n");
     scrollChatWindowToBottom();
@@ -265,7 +257,10 @@ public class userInterface extends View {
    * @param hitOrMiss
    * @param coordinate
    */
-  public void displayAttack(AttackResponseMessage message) {};
+  public void displayAttack(AttackResponseMessage message) {
+    displayNotification("Attacked opponent on " + getAttackCoordinate() + "\n"
+        + "it was a " + message.getHitOrMiss());
+  };
   
   /**
    * Displays the results of an opponent's attack on you. Analogous to putting a pin in a boat
@@ -279,7 +274,6 @@ public class userInterface extends View {
     if(message.getShipSunk().toString() != "NONE") {
       displayNotification("Your opponent sunk your " + message.getShipSunk());
     }
-    
   };
   
   /**
@@ -302,30 +296,6 @@ public class userInterface extends View {
   @Override
   public void displayNotification(String text) {
     display(text);
-  };
-  
-  /**
-   * Extract the coordinates from a BtlButton attack event
-   * @param BtlButton
-   */
-  public void setAttackCoordinates(BtlButton attackAttemptButton) {
-    setAttackCoordinate(attackAttemptButton.getCoordinates());
-    final ActionEvent emptyAction = new ActionEvent("",0,"");
-    
-    display("Attacking opponent on " + attackCoordinate);
-    
-    sendAttack(emptyAction);
-  };
-  
-  /**
-   * Sends controller the coordinate to attack
-   */
-  public void sendAttack(ActionEvent e) {
-    AttackEvent ae = new AttackEvent(e, getAttackCoordinate());
-    if (attackListener != null) {
-      attackListener.attackEventOccurred(ae);
-    }
-    
   };
   
   /** 
@@ -371,8 +341,11 @@ public class userInterface extends View {
   @Override
   public void setShip(Ship ship) {
     display("Please place this " + ship.getShipType());
-    setShipToPlace(ship);
-    shipCoordinates.clear();
+    this.shipToPlace = ship;
+    log.info("setShip: ship looks like {}", ship);
+    log.info("$$$$shipCoordinatesMaster: before clear {}", shipCoordinatesMaster);
+    shipCoordinatesMaster.clear();
+    log.info("$$$$shipCoordinatesMaster: after clear {}", shipCoordinatesMaster);
   };
   
   /**
@@ -380,20 +353,21 @@ public class userInterface extends View {
    * @param ship
    */
   @Override
-  public void displayShip(Ship ship) {};
+  public void displayShip(Ship ship) {
+    
+  };
   
   /**
    * Extract the coordinates from a BtlButton ship placement event
    * @param BtlButton
    */
-  public void setShipCoordinates(BtlButton shipPlacedButton) {
+  public void setShipCoordinates(BtlButton shipPlacedButton, ActionEvent e) {
     Coordinate attemptedPlacement = shipPlacedButton.getCoordinates();
-    final ActionEvent emptyAction = new ActionEvent("",0,"");
-    shipCoordinates.add(attemptedPlacement);
+    shipCoordinatesMaster.add(attemptedPlacement);
     
-    if(getShipToPlace() != null) {
-      if (shipCoordinates.size() == getShipToPlace().getShipSize() ) {
-        attemptSetShip(emptyAction);
+    if(this.shipToPlace != null) {
+      if (shipCoordinatesMaster.size() == this.shipToPlace.getShipSize()) {
+        attemptSetShip(e);
       } 
     }   
   };
@@ -403,14 +377,44 @@ public class userInterface extends View {
    */
   @Override
   public void attemptSetShip(ActionEvent e) {
-    getShipToPlace().setShipCoordinates(shipCoordinates);
+    Ship setShipDebug = new Ship(shipToPlace.getShipType());
+    ArrayList<Coordinate> shipCoordinates = new ArrayList<Coordinate>(shipCoordinatesMaster);
+    
+    setShipDebug.setShipCoordinates(shipCoordinates);
+    log.info("@@setShipDebug looks like: {}", setShipDebug);
+    log.info("@@setShipDebug size = {}, size of shipCoordinates =  {}", setShipDebug.getShipSize(), shipCoordinates.size());
    
-    if (getShipToPlace() != null) {
-      SetShipEvent sse = new SetShipEvent(e, getShipToPlace());
+    if (setShipDebug != null) {
+      SetShipEvent sse = new SetShipEvent(e, setShipDebug);
       if (setShipListener != null) {
+        log.info("@@Attempting to set ship: {}", setShipDebug);
         setShipListener.setShipEventOccurred(sse);
       }   
     }
+    setShipDebug = null;
+  };
+  
+  /**
+   * Extract the coordinates from a BtlButton attack event
+   * @param BtlButton
+   */
+  public void setAttackCoordinates(BtlButton attackAttemptButton, ActionEvent e) {
+    setAttackCoordinate(attackAttemptButton.getCoordinates());
+    log.info("Setting attack coordinates to: {}", getAttackCoordinate());
+    sendAttack(e);
+  };
+  
+  /**
+   * Sends controller the coordinate to attack
+   */
+  @Override
+  public void sendAttack(ActionEvent e) {
+    AttackEvent ae = new AttackEvent(e, getAttackCoordinate());
+    log.info("Sending attack on: {} ", getAttackCoordinate());
+    if (attackListener != null) {
+      attackListener.attackEventOccurred(ae);
+    }
+    
   };
   
   /**
