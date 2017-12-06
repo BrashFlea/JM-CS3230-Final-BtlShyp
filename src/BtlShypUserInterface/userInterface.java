@@ -8,7 +8,6 @@ import main.btlshyp.controller.Controller;
 import main.btlshyp.message.AttackResponseMessage;
 import main.btlshyp.model.Coordinate;
 import main.btlshyp.model.Ship;
-import main.btlshyp.view.DefaultView;
 import main.btlshyp.view.View;
 import main.btlshyp.view.event.AttackListener;
 import main.btlshyp.view.event.ChatEvent;
@@ -19,11 +18,6 @@ import net.miginfocom.swing.MigLayout;
 public class userInterface extends View {
 
   private static final long serialVersionUID = 1L;
-  private static final Dimension SEND_BUTTON_SIZE = new Dimension(250, 35);
-  private static final Dimension DIALOG_BUTTON_SIZE = new Dimension(60, 60);
-  private static final Dimension GAME_BUTTON_SIZE = new Dimension(120, 120);
-  private static final Dimension CHAT_INPUT_SIZE = new Dimension(300, 115);
-  private static final Dimension CHAT_OUTPUT_SIZE = new Dimension(300, 450);
   private static final Font CAMBRIA = new Font("Cambria", Font.PLAIN, 16);
   private static final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
   private static final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
@@ -31,6 +25,7 @@ public class userInterface extends View {
   
   private static JTextArea chatInput;
   private static JTextArea chatOutput;
+  private static JScrollPane chatOutputScrollbar;
 
   public userInterface() {
     initUI();
@@ -55,12 +50,12 @@ public class userInterface extends View {
     JFrame shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
     shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
     JPanel gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
-    JPanel chatArea = new JPanel(new MigLayout("debug, fill"));
-    JScrollPane chatOutputScrollbar = new JScrollPane(chatOutput(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JPanel chatArea = new JPanel(new MigLayout("debug, fill, height 600, width 400"));
+    chatOutputScrollbar = new JScrollPane(chatOutput(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     
-    chatArea.add(chatOutputScrollbar, "wrap, growx");
-    chatArea.add(chatInput(), "wrap, grow");
-    chatArea.add(sendButton(), "grow");
+    chatArea.add(chatOutputScrollbar, "wrap, grow, width 350, height 450");
+    chatArea.add(chatInput(), "wrap, grow, width 350, height 115");
+    chatArea.add(sendButton(), "grow, width 350, height 35");
     
     
     gridBoard.add(playerShipGridArea());
@@ -86,7 +81,6 @@ public class userInterface extends View {
         Coordinate currentLocation = new Coordinate(i,j);
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         BtlButton button = new BtlButton(buttonLabel, currentLocation);
-        button.setPreferredSize(GAME_BUTTON_SIZE);
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -95,10 +89,10 @@ public class userInterface extends View {
         });
           
         if (j == 4) {
-          shipGrid.add(button, "wrap, grow"); 
+          shipGrid.add(button, "wrap, grow, width 120, height 120"); 
         }
         else {
-          shipGrid.add(button, "grow");
+          shipGrid.add(button, "grow, width 120, height 120");
         }
       }
     }
@@ -116,7 +110,6 @@ public class userInterface extends View {
         Coordinate currentLocation = new Coordinate(i,j);
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         BtlButton button = new BtlButton(buttonLabel, currentLocation);
-        button.setPreferredSize(GAME_BUTTON_SIZE);
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -125,10 +118,10 @@ public class userInterface extends View {
         });
         
         if (j == 4) {
-          shipGrid.add(button, "wrap, grow"); 
+          shipGrid.add(button, "wrap, grow, width 120, height 120"); 
         }
         else {
-          shipGrid.add(button, "grow");
+          shipGrid.add(button, "grow, width 120, height 120");
         }
       }
     }
@@ -137,32 +130,13 @@ public class userInterface extends View {
   
   private JTextArea chatInput() {
     chatInput = new JTextArea();
-    chatInput.setPreferredSize(CHAT_INPUT_SIZE);
-
-    // Action Listener for "Enter"
-    chatInput.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        if((e.getKeyCode() == KeyEvent.VK_ENTER)) {
-          //sendChat(e);
-        }
-      }
-    });
-
-    // Action Listener for "ALT + Enter"
-    chatInput.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        if((e.getKeyCode() == KeyEvent.VK_ENTER && e.getModifiers() == KeyEvent.CTRL_MASK)) {
-          //sendChat(e);
-        }
-      }
-    });
+    chatInput.setLineWrap(true);
 
     return chatInput;
   }
   
   private JButton sendButton() {
     JButton sendButton = new JButton("Send");
-    sendButton.setPreferredSize(SEND_BUTTON_SIZE);
     
     sendButton.addActionListener(new ActionListener() {
       @Override
@@ -177,7 +151,7 @@ public class userInterface extends View {
   
   private JTextArea chatOutput() {
     chatOutput = new JTextArea();
-    chatOutput.setPreferredSize(CHAT_OUTPUT_SIZE);
+    chatOutput.setLineWrap(true);
     chatOutput.setEditable(false);
     
     return chatOutput;
@@ -198,9 +172,6 @@ public class userInterface extends View {
     JButton yesButton = new JButton("Yes");
     JButton noButton = new JButton("No");
     
-    yesButton.setPreferredSize(DIALOG_BUTTON_SIZE);
-    noButton.setPreferredSize(DIALOG_BUTTON_SIZE);
-  
     yesButton.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
         // TODO complete playAgain() method;
@@ -213,8 +184,8 @@ public class userInterface extends View {
       }
     });
     
-    playAgain.add(yesButton, "grow, center");
-    playAgain.add(noButton, "grow, center");
+    playAgain.add(yesButton, "grow, center, width 60, height 60");
+    playAgain.add(noButton, "grow, center, width 60, height 60");
 
     return playAgain;
 
@@ -249,6 +220,15 @@ public class userInterface extends View {
   
   public void display(String message) {
     chatOutput.append(message + "\n");
+    scrollChatWindowToBottom();
+  }
+  
+  /**
+   * Scrolls the messages text area down to the bottom
+   */
+  public void scrollChatWindowToBottom() {
+    Point bottomScrollPoint = new Point(0, chatOutput.getDocument().getLength());
+    chatOutputScrollbar.getViewport().setViewPosition(bottomScrollPoint);
   }
   
   /**
@@ -352,11 +332,8 @@ public class userInterface extends View {
     Controller controller = new Controller(btlshypgui);
     //controller.init();
     //controller.playGame();
-    
-    
 
   }
-
 
 } // end class
 
