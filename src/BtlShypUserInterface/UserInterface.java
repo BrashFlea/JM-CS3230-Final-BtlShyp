@@ -26,7 +26,6 @@ public class UserInterface extends View {
    * Date: 12/7/2017
    */
   private static final long serialVersionUID = 1L;
-  private final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
   private final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
   private final Color playerBackground = new Color(73, 103, 134);
   private final Color playerShipHit = new Color(128, 24, 21);
@@ -42,7 +41,6 @@ public class UserInterface extends View {
   private JScrollPane chatOutputScrollbar;
   
   private JFrame shipGridFrame;
-  private JFrame playAgainFrame;
   private JPanel gridBoard;
   private JPanel chatArea;
   
@@ -62,18 +60,7 @@ public class UserInterface extends View {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
-
-    /*
-     * Dialog box asking player if they want to play again. 
-     * Not currently used.
-    playAgainFrame = new JFrame("BtlShyp");
-    playAgainFrame.getContentPane().add(checkForPlayagain());
-    playAgainFrame.setIconImage(BTLSHYP_ICON.getImage());
-    playAgainFrame.pack();
-    playAgainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    playAgainFrame.setVisible(true);
-    */
-    
+   
     shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
     shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
     gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
@@ -118,7 +105,6 @@ public class UserInterface extends View {
         playerShipGridArray[i][j].addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             setShipCoordinates(playerShipGridArray[inneri][innerj], e);
-            //playerShipGridArray[inneri][innerj].setBackground(Color.gray);
           }
         });
           
@@ -200,39 +186,6 @@ public class UserInterface extends View {
     return chatOutput;
   }
   
-  /*
-  private JPanel checkForPlayagain() {
-    JPanel playAgain = new JPanel(new MigLayout("debug, fill"));
-    JLabel playerDialog = new JLabel("Would you like to play again?");
-    playerDialog.setFont(CAMBRIA_BIGGER);
-    playAgain.add(playerDialog, "wrap, align center");
-    JButton yesButton = new JButton("Yes");
-    JButton noButton = new JButton("No");
-    
-    yesButton.addActionListener(new ActionListener() {
-    public void actionPerformed(ActionEvent evt) {
-        // TODO complete playAgain() method;
-      }
-    });
-    
-    noButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        exitGame();
-      }
-    });
-    
-    
-    playAgain.add(yesButton, "grow, center, width 60, height 60");
-    playAgain.add(noButton, "grow, center, width 60, height 60");
-
-    return playAgain;
-  }
-  */
-
-  private void exitGame() {
-    System.exit(0);
-  }
-  
   @Override
   public void registerChatListener(ChatListener listener) {
     this.chatListener = listener;
@@ -299,15 +252,7 @@ public class UserInterface extends View {
       chatListener.chatEventOccurred(chatEvent);
     }
   };
-  
-  /**
-   * Prompts user for name and returns to controller
-   *
-  public String getUsername() {
-     return JOptionPane.showInputDialog(null, "Enter username: ");
-    }
-    */
-  
+   
   /** 
    * Unlocks the inputs on the game portion of the GUI
    * Prompts user for attack
@@ -485,15 +430,8 @@ public class UserInterface extends View {
           playerShipGridArray[coordx][coordy].getText() + "_HIT");
     }
     if(message.getHitOrMiss().toString() == "MISS") {
-      /* Do nothing. This looks the most visually appealing on the GUI 
-       * but i'm leaving the code here just in case I want to change it.
-       * 
-      playerShipGridArray[coordx][coordy].setBackground(Color.WHITE);
-      playerShipGridArray[coordx][coordy].setText(
-          playerShipGridArray[coordx][coordy].getText() + "_MISS");
-          */
+      // Do nothing. This looks the most visually appealing on the GUI 
     }
-    
     if(message.getShipSunk().toString() != "NONE") {
       displayNotification("Your opponent sunk your " + message.getShipSunk());
     }
