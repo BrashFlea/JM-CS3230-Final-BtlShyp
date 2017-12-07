@@ -11,7 +11,6 @@ import main.btlshyp.controller.Controller;
 import main.btlshyp.message.AttackResponseMessage;
 import main.btlshyp.model.Coordinate;
 import main.btlshyp.model.Ship;
-import main.btlshyp.model.ShipType;
 import main.btlshyp.view.View;
 import main.btlshyp.view.event.AttackEvent;
 import main.btlshyp.view.event.AttackListener;
@@ -19,8 +18,6 @@ import main.btlshyp.view.event.ChatEvent;
 import main.btlshyp.view.event.ChatListener;
 import main.btlshyp.view.event.SetShipEvent;
 import main.btlshyp.view.event.SetShipListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import net.miginfocom.swing.MigLayout;
 
 @Slf4j
@@ -44,6 +41,8 @@ public class userInterface extends View {
   private ArrayList<Coordinate> shipCoordinatesMaster = new ArrayList<Coordinate>();
   private Ship shipToPlace = null;
   private Coordinate attackCoordinate = new Coordinate(-1,-1);
+  private BtlButton[][] playerShipGridArray = new BtlButton[5][5];
+  private BtlButton[][] opponentShipGridArray = new BtlButton[5][5];
 
   public userInterface() {
     initUI();
@@ -56,15 +55,17 @@ public class userInterface extends View {
       ex.printStackTrace();
     }
 
-    
+    /*
+     * Dialog box asking player if they want to play again. 
+     * Not currently used.
     playAgainFrame = new JFrame("BtlShyp");
     playAgainFrame.getContentPane().add(checkForPlayagain());
     playAgainFrame.setIconImage(BTLSHYP_ICON.getImage());
     playAgainFrame.pack();
     playAgainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     playAgainFrame.setVisible(true);
+    */
     
-     
     shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
     shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
     gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
@@ -75,11 +76,9 @@ public class userInterface extends View {
     chatArea.add(chatInput(), "wrap, grow, width 350, height 115");
     chatArea.add(sendButton(), "grow, width 350, height 35");
     
-    
     gridBoard.add(playerShipGridArea());
     gridBoard.add(chatArea, "grow");
     gridBoard.add(opponentShipGridArea());
-    
     
     shipGridFrame.add(gridBoard);
     shipGridFrame.pack();
@@ -91,35 +90,35 @@ public class userInterface extends View {
   private JPanel playerShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
     String BUTTON_NO_WRAP_CONSTRAINTS = "wrap, grow, width 120, height 120";
-    String BUTTON__WRAP_CONSTRAINTS = "grow, width 120, height 120";
+    String BUTTON_WRAP_CONSTRAINTS = "grow, width 120, height 120";
 
     String[] colLabels = {"A","B","C","D","E"};
     String buttonLabel = "";
 
     for (int i = 0; i < 5; i++) {
-      for(int j = 0; j < 5; j++) {
+      for (int j = 0; j < 5; j++) {
+        final int inneri = i;
+        final int innerj = j;
         Coordinate currentLocation = new Coordinate(i,j);
         buttonLabel = colLabels[j] + Integer.toString(i+1);
-        BtlButton button = new BtlButton(buttonLabel, currentLocation);
-        button.setContentAreaFilled(false);
-        button.setBorder(BorderFactory.createRaisedBevelBorder());
-        button.setOpaque(true);
-        button.setBackground(Color.CYAN);
+        playerShipGridArray[i][j] = new BtlButton(buttonLabel, currentLocation);
+        playerShipGridArray[i][j].setContentAreaFilled(false);
+        playerShipGridArray[i][j].setBorder(BorderFactory.createRaisedBevelBorder());
+        playerShipGridArray[i][j].setOpaque(true);
+        playerShipGridArray[i][j].setBackground(Color.CYAN);
         
-        button.addActionListener(new ActionListener() {
+        playerShipGridArray[i][j].addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            setShipCoordinates(button, e);
-            button.setBackground(Color.gray);
+            setShipCoordinates(playerShipGridArray[inneri][innerj], e);
+            //playerShipGridArray[inneri][innerj].setBackground(Color.gray);
           }
         });
           
         if (j == 4) {
-          BUTTON_NO_WRAP_CONSTRAINTS += ",id player" + buttonLabel;
-          shipGrid.add(button, BUTTON_NO_WRAP_CONSTRAINTS ); 
+          shipGrid.add(playerShipGridArray[i][j], BUTTON_NO_WRAP_CONSTRAINTS ); 
         }
         else {
-          BUTTON__WRAP_CONSTRAINTS += ",id player" + buttonLabel;
-          shipGrid.add(button, BUTTON__WRAP_CONSTRAINTS);
+          shipGrid.add(playerShipGridArray[i][j], BUTTON_WRAP_CONSTRAINTS);
         }
       }
     }
@@ -129,33 +128,34 @@ public class userInterface extends View {
   private JPanel opponentShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
     String BUTTON_NO_WRAP_CONSTRAINTS = "wrap, grow, width 120, height 120";
-    String BUTTON__WRAP_CONSTRAINTS = "grow, width 120, height 120";
+    String BUTTON_WRAP_CONSTRAINTS = "grow, width 120, height 120";
     
     String[] colLabels = {"A","B","C","D","E"};
     String buttonLabel = "";
 
     for (int i = 0; i < 5; i++) {
       for(int j = 0; j < 5; j++) {
+        final int inneri = i;
+        final int innerj = j;
         Coordinate currentLocation = new Coordinate(i,j);
         buttonLabel = colLabels[j] + Integer.toString(i+1);
-        BtlButton button = new BtlButton(buttonLabel, currentLocation);
-        button.setContentAreaFilled(false);
-        button.setBorder(BorderFactory.createRaisedBevelBorder());
-        button.setOpaque(true);
+        opponentShipGridArray[i][j] = new BtlButton(buttonLabel, currentLocation);
+        opponentShipGridArray[i][j].setContentAreaFilled(false);
+        opponentShipGridArray[i][j].setBorder(BorderFactory.createRaisedBevelBorder());
+        opponentShipGridArray[i][j].setOpaque(true);
+        opponentShipGridArray[i][j].setBackground(Color.LIGHT_GRAY);
         
-        button.addActionListener(new ActionListener() {
+        opponentShipGridArray[i][j].addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            setAttackCoordinates(button, e);         
+            setAttackCoordinates(opponentShipGridArray[inneri][innerj], e);         
           }
         });
         
         if (j == 4) {
-          BUTTON_NO_WRAP_CONSTRAINTS += ",id opponent" + buttonLabel;
-          shipGrid.add(button, BUTTON_NO_WRAP_CONSTRAINTS); 
+          shipGrid.add(opponentShipGridArray[i][j], BUTTON_NO_WRAP_CONSTRAINTS); 
         }
         else {
-          BUTTON__WRAP_CONSTRAINTS += ",id opponent" + buttonLabel;
-          shipGrid.add(button, BUTTON__WRAP_CONSTRAINTS);
+          shipGrid.add(opponentShipGridArray[i][j], BUTTON_WRAP_CONSTRAINTS);
         }
       }
     }
@@ -315,6 +315,19 @@ public class userInterface extends View {
   @Override
   public void yourTurn() {
     displayNotification("It is now your turn");
+    
+    // Lock playerShipGridArray
+    for(int i = 0; i < playerShipGridArray.length; i++) {
+      for (int j = 0; j < playerShipGridArray.length; j++) {
+        playerShipGridArray[i][j].setEnabled(true);
+      }
+    }
+    // Lock opponentShipGridArray
+    for(int i = 0; i < opponentShipGridArray.length; i++) {
+      for (int j = 0; j < opponentShipGridArray.length; j++) {
+        opponentShipGridArray[i][j].setEnabled(true);
+      }
+    }
   };
   
   /**
@@ -323,6 +336,19 @@ public class userInterface extends View {
   @Override
   public void notYourTurn() {
     displayNotification("It is now your opponents turn");
+    
+    // Lock playerShipGridArray
+    for(int i = 0; i < playerShipGridArray.length; i++) {
+      for (int j = 0; j < playerShipGridArray.length; j++) {
+        playerShipGridArray[i][j].setEnabled(false);
+      }
+    }
+    // Lock opponentShipGridArray
+    for(int i = 0; i < opponentShipGridArray.length; i++) {
+      for (int j = 0; j < opponentShipGridArray.length; j++) {
+        opponentShipGridArray[i][j].setEnabled(false);
+      }
+    }
   };
   
   /**
@@ -331,7 +357,8 @@ public class userInterface extends View {
    */
   @Override
   public void setShip(Ship ship) {
-    display("Please place this " + ship.getShipType());
+    display("Please place this " + ship.getShipType() +"\n" + 
+        "It is " + ship.getShipSize() +  " blocks long");
     this.shipToPlace = ship;
     log.info("setShip: ship looks like {}", ship);
     shipCoordinatesMaster.clear();
@@ -367,7 +394,7 @@ public class userInterface extends View {
     if (setShipEventShip != null) {
       SetShipEvent sse = new SetShipEvent(e, setShipEventShip);
       if (setShipListener != null) {
-        log.info("@@Attempting to set ship: {}", setShipEventShip);
+        log.info("Attempting to set ship: {}", setShipEventShip);
         setShipListener.setShipEventOccurred(sse);
       }   
     }
@@ -378,8 +405,13 @@ public class userInterface extends View {
    * Displays a properly placed ship in our board
    * @param ship
    */
+  @Override
   public void displayShip(Ship ship) {
-    
+    ArrayList<Coordinate> shipCoordinates = ship.getShipCoordinates();
+    for(int i = 0; i < shipCoordinates.size(); i++) {
+      Coordinate currentCoordinate = shipCoordinates.get(i);
+      playerShipGridArray[currentCoordinate.x][currentCoordinate.y].setBackground(Color.gray);
+    } 
   };
   
   /**
@@ -412,19 +444,21 @@ public class userInterface extends View {
    * @param coordinate
    */
   public void displayAttack(AttackResponseMessage message) {
+    Coordinate messageCoord = message.getCoordinate();
+    int coordx = messageCoord.x;
+    int coordy = messageCoord.y;
+    
     displayNotification("Attacked opponent on " + convertCoordinate(getAttackCoordinate()) + "\n"
         + "It was a " + message.getHitOrMiss());
     if(message.getHitOrMiss().toString() == "HIT") {
-      String componentName = "opponent" + convertCoordinate(getAttackCoordinate());
-      Component buttonPressed = findComponentByName(gridBoard, componentName);
-      
-      if (buttonPressed != null) {
-        buttonPressed.setBackground(Color.RED);
-      }
-      
+      opponentShipGridArray[coordx][coordy].setBackground(Color.RED);
+      opponentShipGridArray[coordx][coordy].setText(
+          opponentShipGridArray[coordx][coordy].getText() + "_HIT");
     }
     if(message.getHitOrMiss().toString() == "MISS") {
-      
+      opponentShipGridArray[coordx][coordy].setBackground(Color.WHITE);
+      opponentShipGridArray[coordx][coordy].setText(
+          opponentShipGridArray[coordx][coordy].getText() + "_MISS");
     }
     if(message.getShipSunk().toString() != "NONE") {
       displayNotification("You sunk your opponent's " + message.getShipSunk());
@@ -438,8 +472,27 @@ public class userInterface extends View {
    * @param coordinate
    */
   public void displayOpponentAttack(AttackResponseMessage message) {
+    Coordinate messageCoord = message.getCoordinate();
+    int coordx = messageCoord.x;
+    int coordy = messageCoord.y;
+    
     displayNotification("Opponent attacked you on " +  convertCoordinate(message.getCoordinate()) + "\n"
         + "It was a " + message.getHitOrMiss());
+    if(message.getHitOrMiss().toString() == "HIT") {
+      playerShipGridArray[coordx][coordy].setBackground(Color.RED);
+      playerShipGridArray[coordx][coordy].setText(
+          playerShipGridArray[coordx][coordy].getText() + "_HIT");
+    }
+    if(message.getHitOrMiss().toString() == "MISS") {
+      /* Do nothing. This looks the most visually appealing on the GUI 
+       * but i'm leaving the code here just in case I want to change it.
+       * 
+      playerShipGridArray[coordx][coordy].setBackground(Color.WHITE);
+      playerShipGridArray[coordx][coordy].setText(
+          playerShipGridArray[coordx][coordy].getText() + "_MISS");
+          */
+    }
+    
     if(message.getShipSunk().toString() != "NONE") {
       displayNotification("Your opponent sunk your " + message.getShipSunk());
     }
@@ -449,8 +502,34 @@ public class userInterface extends View {
    * Resets gui to gameless state
    */
   @Override
-  public void resetGame() {};
+  public void resetGame() {
+    String[] colLabels = {"A","B","C","D","E"};
+    String buttonLabel = "";
+    
+    // Reset playerShipGridArray
+    for(int i = 0; i < playerShipGridArray.length; i++) {
+      for (int j = 0; j < playerShipGridArray.length; j++) {
+        buttonLabel = colLabels[j] + Integer.toString(i+1);
+        playerShipGridArray[i][j].setText(buttonLabel);
+        playerShipGridArray[i][j].setBackground(Color.CYAN);
+        playerShipGridArray[i][j].setEnabled(true);
+      }
+    }
+    // Reset opponentShipGridArray
+    for(int i = 0; i < opponentShipGridArray.length; i++) {
+      for (int j = 0; j < opponentShipGridArray.length; j++) {
+        buttonLabel = colLabels[j] + Integer.toString(i+1);
+        opponentShipGridArray[i][j].setText(buttonLabel);
+        opponentShipGridArray[i][j].setBackground(Color.LIGHT_GRAY);
+        opponentShipGridArray[i][j].setEnabled(true);
+      }
+    }
+  };
   
+  /**
+   * Convert Coordinates into standard BtlShyp style
+   * I.E. (0,0) becomes A1
+   */
   public String convertCoordinate(Coordinate coord) {
     int x = coord.x;
     int y = coord.y;
@@ -460,31 +539,6 @@ public class userInterface extends View {
     return convertedCoordinate;
   }
   
-  public Component findComponentByName(Container container, String componentName) {
-    for (Component component: container.getComponents()) {
-      if (componentName.equals(component.getName())) {
-        return component;
-      }
-      if (component instanceof JRootPane) {
-        // According to the JavaDoc for JRootPane, JRootPane is
-        // "A lightweight container used behind the scenes by JFrame,
-        // JDialog, JWindow, JApplet, and JInternalFrame.". The reference
-        // to the RootPane is set up by implementing the RootPaneContainer
-        // interface by the JFrame, JDialog, JWindow, JApplet and
-        // JInternalFrame. See also the JavaDoc for RootPaneContainer.
-        // When a JRootPane is found, recurse into it and continue searching.
-        JRootPane nestedJRootPane = (JRootPane)component;
-        return findComponentByName(nestedJRootPane.getContentPane(), componentName);
-      }
-      if (component instanceof JPanel) {
-        // JPanel found. Recursing into this panel.
-        JPanel nestedJPanel = (JPanel)component;
-        return findComponentByName(nestedJPanel, componentName);
-      }
-    }
-    return null;
-  }
-
   public static void main(String[] args) {
     userInterface btlshypgui = new userInterface();
     Controller controller = new Controller(btlshypgui);
