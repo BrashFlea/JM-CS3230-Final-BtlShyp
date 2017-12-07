@@ -36,6 +36,11 @@ public class userInterface extends View {
   private JTextArea chatOutput;
   private JScrollPane chatOutputScrollbar;
   
+  private JFrame shipGridFrame;
+  private JFrame playAgainFrame;
+  private JPanel gridBoard;
+  private JPanel chatArea;
+  
   private ArrayList<Coordinate> shipCoordinatesMaster = new ArrayList<Coordinate>();
   private Ship shipToPlace = null;
   private Coordinate attackCoordinate = new Coordinate(-1,-1);
@@ -52,7 +57,7 @@ public class userInterface extends View {
     }
 
     
-    JFrame playAgainFrame = new JFrame("BtlShyp");
+    playAgainFrame = new JFrame("BtlShyp");
     playAgainFrame.getContentPane().add(checkForPlayagain());
     playAgainFrame.setIconImage(BTLSHYP_ICON.getImage());
     playAgainFrame.pack();
@@ -60,10 +65,10 @@ public class userInterface extends View {
     playAgainFrame.setVisible(true);
     
      
-    JFrame shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
+    shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
     shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
-    JPanel gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
-    JPanel chatArea = new JPanel(new MigLayout("debug, fill, height 600, width 400"));
+    gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
+    chatArea = new JPanel(new MigLayout("debug, fill, height 600, width 400"));
     chatOutputScrollbar = new JScrollPane(chatOutput(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     
     chatArea.add(chatOutputScrollbar, "wrap, grow, width 350, height 450");
@@ -409,6 +414,18 @@ public class userInterface extends View {
   public void displayAttack(AttackResponseMessage message) {
     displayNotification("Attacked opponent on " + convertCoordinate(getAttackCoordinate()) + "\n"
         + "It was a " + message.getHitOrMiss());
+    if(message.getHitOrMiss().toString() == "HIT") {
+      String componentName = "opponent" + convertCoordinate(getAttackCoordinate());
+      Component buttonPressed = findComponentByName(gridBoard, componentName);
+      
+      if (buttonPressed != null) {
+        buttonPressed.setBackground(Color.RED);
+      }
+      
+    }
+    if(message.getHitOrMiss().toString() == "MISS") {
+      
+    }
     if(message.getShipSunk().toString() != "NONE") {
       displayNotification("You sunk your opponent's " + message.getShipSunk());
     }
@@ -441,6 +458,31 @@ public class userInterface extends View {
     
     String convertedCoordinate = colLabels[y] + (x + 1);
     return convertedCoordinate;
+  }
+  
+  public Component findComponentByName(Container container, String componentName) {
+    for (Component component: container.getComponents()) {
+      if (componentName.equals(component.getName())) {
+        return component;
+      }
+      if (component instanceof JRootPane) {
+        // According to the JavaDoc for JRootPane, JRootPane is
+        // "A lightweight container used behind the scenes by JFrame,
+        // JDialog, JWindow, JApplet, and JInternalFrame.". The reference
+        // to the RootPane is set up by implementing the RootPaneContainer
+        // interface by the JFrame, JDialog, JWindow, JApplet and
+        // JInternalFrame. See also the JavaDoc for RootPaneContainer.
+        // When a JRootPane is found, recurse into it and continue searching.
+        JRootPane nestedJRootPane = (JRootPane)component;
+        return findComponentByName(nestedJRootPane.getContentPane(), componentName);
+      }
+      if (component instanceof JPanel) {
+        // JPanel found. Recursing into this panel.
+        JPanel nestedJPanel = (JPanel)component;
+        return findComponentByName(nestedJPanel, componentName);
+      }
+    }
+    return null;
   }
 
   public static void main(String[] args) {
