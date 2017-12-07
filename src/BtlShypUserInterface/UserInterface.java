@@ -3,11 +3,8 @@ package BtlShypUserInterface;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-
 import javax.swing.*;
-
 import lombok.extern.slf4j.Slf4j;
-import main.btlshyp.controller.Controller;
 import main.btlshyp.message.AttackResponseMessage;
 import main.btlshyp.model.Coordinate;
 import main.btlshyp.model.Ship;
@@ -21,12 +18,15 @@ import main.btlshyp.view.event.SetShipListener;
 import net.miginfocom.swing.MigLayout;
 
 @Slf4j
-public class userInterface extends View {
+public class UserInterface extends View {
 
-  private final long serialVersionUID = 1L;
-  private final Font CAMBRIA = new Font("Cambria", Font.PLAIN, 16);
+  /**
+   * Graphical User Interface for the game BtlShyp
+   * Author: Jonathan Mirabile
+   * Date: 12/7/2017
+   */
+  private static final long serialVersionUID = 1L;
   private final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
-  private final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
   private final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
   private final Color playerBackground = new Color(73, 103, 134);
   private final Color playerShipHit = new Color(128, 24, 21);
@@ -52,7 +52,7 @@ public class userInterface extends View {
   private BtlButton[][] playerShipGridArray = new BtlButton[5][5];
   private BtlButton[][] opponentShipGridArray = new BtlButton[5][5];
 
-  public userInterface() {
+  public UserInterface() {
     initUI();
   }
   
@@ -93,7 +93,6 @@ public class userInterface extends View {
     shipGridFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     shipGridFrame.setVisible(true);
   }
-  
   
   private JPanel playerShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
@@ -201,6 +200,7 @@ public class userInterface extends View {
     return chatOutput;
   }
   
+  /*
   private JPanel checkForPlayagain() {
     JPanel playAgain = new JPanel(new MigLayout("debug, fill"));
     JLabel playerDialog = new JLabel("Would you like to play again?");
@@ -221,35 +221,29 @@ public class userInterface extends View {
       }
     });
     
+    
     playAgain.add(yesButton, "grow, center, width 60, height 60");
     playAgain.add(noButton, "grow, center, width 60, height 60");
 
     return playAgain;
-
   }
+  */
 
   private void exitGame() {
     System.exit(0);
   }
-
-  private void playAgain() {
-    eraseBoard();
-
-  }
-
-  private void eraseBoard() {
-
-  }
   
-  
+  @Override
   public void registerChatListener(ChatListener listener) {
     this.chatListener = listener;
   }
 
+  @Override
   public void registerSetShipListener(SetShipListener listener) {
     this.setShipListener = listener;
   }
 
+  @Override
   public void registerAttackListener(AttackListener listener) {
     this.attackListener = listener;
   }
@@ -261,22 +255,17 @@ public class userInterface extends View {
   public void setAttackCoordinate(Coordinate attackCoordinate) {
     this.attackCoordinate = attackCoordinate;
   }
-   
+  
+  /**
+   * Handles formatting messages before they are displayed
+   * Scrolls the chat window to the bottom when placing a new message
+   * @param message
+   */
   public void display(String message) {
     chatOutput.append(message + "\n");
     scrollChatWindowToBottom();
   }
-  
-  /**
-   * Scrolls the messages text area down to the bottom
-   */
-  public void scrollChatWindowToBottom() {
-    Point bottomScrollPoint = new Point(0, chatOutput.getDocument().getLength());
-    chatOutputScrollbar.getViewport().setViewPosition(bottomScrollPoint);
-  }
-  
-
-  
+    
   /**
    * Displays community chat messages that are broadcast to all
    * @param chat
@@ -300,7 +289,7 @@ public class userInterface extends View {
   };
   
   /** 
-   * Emits ChatEvent for controller to catch which includes a string message to send out to the world
+   * Emits ChatEvent for controller to catch which includes a string message to send out to the server
    */
   @Override
   public void sendChat(ActionEvent e) {
@@ -313,13 +302,14 @@ public class userInterface extends View {
   
   /**
    * Prompts user for name and returns to controller
-   */
+   *
   public String getUsername() {
      return JOptionPane.showInputDialog(null, "Enter username: ");
     }
+    */
   
   /** 
-   * Unlocks the inputs on the game portion of the gui
+   * Unlocks the inputs on the game portion of the GUI
    * Prompts user for attack
    */
   @Override
@@ -341,7 +331,8 @@ public class userInterface extends View {
   };
   
   /**
-   * Locks game gui, displays wait message
+   * Locks game GUI 
+   * Displays wait message
    */
   @Override
   public void notYourTurn() {
@@ -412,7 +403,7 @@ public class userInterface extends View {
   };
   
   /**
-   * Displays a properly placed ship in our board
+   * Displays a properly placed ship on players board
    * @param ship
    */
   @Override
@@ -436,6 +427,7 @@ public class userInterface extends View {
   
   /**
    * Sends controller the coordinate to attack
+   * @param AttackCoordinate
    */
   @Override
   public void sendAttack(ActionEvent e) {
@@ -444,7 +436,6 @@ public class userInterface extends View {
     if (attackListener != null) {
       attackListener.attackEventOccurred(ae);
     }
-    
   };
   
   /**
@@ -538,7 +529,7 @@ public class userInterface extends View {
   
   /**
    * Convert Coordinates into standard BtlShyp style
-   * I.E. (0,0) becomes A1
+   * Ex: (0,0) becomes A1
    */
   public String convertCoordinate(Coordinate coord) {
     int x = coord.x;
@@ -549,13 +540,13 @@ public class userInterface extends View {
     return convertedCoordinate;
   }
   
-  public static void main(String[] args) {
-    userInterface btlshypgui = new userInterface();
-    Controller controller = new Controller(btlshypgui);
-    controller.init();
-    controller.playGame();
-
+  /**
+   * Scrolls the messages text area down to the bottom
+   */
+  public void scrollChatWindowToBottom() {
+    Point bottomScrollPoint = new Point(0, chatOutput.getDocument().getLength());
+    chatOutputScrollbar.getViewport().setViewPosition(bottomScrollPoint);
   }
-
+  
 } // end class
 
