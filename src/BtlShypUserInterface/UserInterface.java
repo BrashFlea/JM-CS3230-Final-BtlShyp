@@ -27,6 +27,7 @@ public class UserInterface extends View {
    */
   private static final long serialVersionUID = 1L;
   private final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
+  private final Font CAMBRIA_BIG_BOLD = new Font("Cambria", Font.BOLD, 16);
   private final Color playerBackground = new Color(73, 103, 134);
   private final Color playerShipHit = new Color(128, 24, 21);
   private final Color playerShipPlaced = new Color(57, 61, 65);
@@ -35,14 +36,18 @@ public class UserInterface extends View {
   private final Color opponentShipHit = new Color(230, 18, 18);
   private final Color opponentShipMiss = Color.WHITE;
   private final Color opponentButtonTextColor = Color.BLACK;
-  
+
+  private JFrame shipGridFrame;
+  private JPanel gridBoard;
+  private JPanel textBoard;
+  private JPanel gameBoard;
+  private JPanel chatArea;
   private JTextArea chatInput;
   private JTextArea chatOutput;
   private JScrollPane chatOutputScrollbar;
-  
-  private JFrame shipGridFrame;
-  private JPanel gridBoard;
-  private JPanel chatArea;
+  private JLabel yourBoard;
+  private JLabel title;
+  private JLabel opponentBoard;
   
   private ArrayList<Coordinate> shipCoordinatesMaster = new ArrayList<Coordinate>();
   private Ship shipToPlace = null;
@@ -63,7 +68,9 @@ public class UserInterface extends View {
    
     shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
     shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
-    gridBoard = new JPanel(new MigLayout("debug", "[][grow][]"));
+    gridBoard = new JPanel(new MigLayout("debug", "[|grow|]"));
+    textBoard = new JPanel(new MigLayout("debug, fillx"));
+    gameBoard = new JPanel(new MigLayout());
     chatArea = new JPanel(new MigLayout("debug, fill, height 600, width 400"));
     chatOutputScrollbar = new JScrollPane(chatOutput(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     
@@ -75,7 +82,14 @@ public class UserInterface extends View {
     gridBoard.add(chatArea, "grow");
     gridBoard.add(opponentShipGridArea());
     
-    shipGridFrame.add(gridBoard);
+    textBoard.add(yourBoard(), "grow, width 630, height 25");
+    textBoard.add(title(), "grow, width 400, height 25");
+    textBoard.add(opponentBoard(), "grow, width 630, height 25");
+    
+    gameBoard.add(gridBoard, "wrap");
+    gameBoard.add(textBoard);
+   
+    shipGridFrame.add(gameBoard);
     shipGridFrame.pack();
     shipGridFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     shipGridFrame.setVisible(true);
@@ -184,6 +198,24 @@ public class UserInterface extends View {
     chatOutput.setEditable(false);
     
     return chatOutput;
+  }
+  
+  private JLabel yourBoard() {
+    yourBoard = new JLabel("Your Board", SwingConstants.LEFT);
+    yourBoard.setFont(CAMBRIA_BIG_BOLD);
+    return yourBoard;
+  }
+  
+  private JLabel title() {
+    title = new JLabel("Jonathan Mirabile - BtlShyp", SwingConstants.CENTER);
+    title.setFont(CAMBRIA_BIG_BOLD);
+    return title;
+  }
+  
+  private JLabel opponentBoard() {
+    opponentBoard = new JLabel("Opponent Board", SwingConstants.RIGHT);
+    opponentBoard.setFont(CAMBRIA_BIG_BOLD);
+    return opponentBoard;
   }
   
   @Override
