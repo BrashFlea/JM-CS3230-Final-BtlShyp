@@ -28,6 +28,14 @@ public class userInterface extends View {
   private final Font CAMBRIA_BIGGER = new Font("Cambria", Font.PLAIN, 18);
   private final Font CAMBRIA_BIGGEST = new Font("Cambria", Font.PLAIN, 20);
   private final ImageIcon BTLSHYP_ICON = new ImageIcon("resources/icons8-battleship-96.png");
+  private final Color playerBackground = new Color(73, 103, 134);
+  private final Color playerShipHit = new Color(128, 24, 21);
+  private final Color playerShipPlaced = new Color(57, 61, 65);
+  private final Color playerButtonTextColor = Color.WHITE;
+  private final Color opponentBackground = Color.LIGHT_GRAY;
+  private final Color opponentShipHit = new Color(230, 18, 18);
+  private final Color opponentShipMiss = Color.WHITE;
+  private final Color opponentButtonTextColor = Color.BLACK;
   
   private JTextArea chatInput;
   private JTextArea chatOutput;
@@ -105,7 +113,8 @@ public class userInterface extends View {
         playerShipGridArray[i][j].setContentAreaFilled(false);
         playerShipGridArray[i][j].setBorder(BorderFactory.createRaisedBevelBorder());
         playerShipGridArray[i][j].setOpaque(true);
-        playerShipGridArray[i][j].setBackground(Color.CYAN);
+        playerShipGridArray[i][j].setBackground(playerBackground);
+        playerShipGridArray[i][j].setForeground(playerButtonTextColor);
         
         playerShipGridArray[i][j].addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -143,7 +152,8 @@ public class userInterface extends View {
         opponentShipGridArray[i][j].setContentAreaFilled(false);
         opponentShipGridArray[i][j].setBorder(BorderFactory.createRaisedBevelBorder());
         opponentShipGridArray[i][j].setOpaque(true);
-        opponentShipGridArray[i][j].setBackground(Color.LIGHT_GRAY);
+        opponentShipGridArray[i][j].setBackground(opponentBackground);
+        opponentShipGridArray[i][j].setForeground(opponentButtonTextColor);
         
         opponentShipGridArray[i][j].addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -410,7 +420,7 @@ public class userInterface extends View {
     ArrayList<Coordinate> shipCoordinates = ship.getShipCoordinates();
     for(int i = 0; i < shipCoordinates.size(); i++) {
       Coordinate currentCoordinate = shipCoordinates.get(i);
-      playerShipGridArray[currentCoordinate.x][currentCoordinate.y].setBackground(Color.gray);
+      playerShipGridArray[currentCoordinate.x][currentCoordinate.y].setBackground(playerShipPlaced);
     } 
   };
   
@@ -451,12 +461,12 @@ public class userInterface extends View {
     displayNotification("Attacked opponent on " + convertCoordinate(getAttackCoordinate()) + "\n"
         + "It was a " + message.getHitOrMiss());
     if(message.getHitOrMiss().toString() == "HIT") {
-      opponentShipGridArray[coordx][coordy].setBackground(Color.RED);
+      opponentShipGridArray[coordx][coordy].setBackground(opponentShipHit);
       opponentShipGridArray[coordx][coordy].setText(
           opponentShipGridArray[coordx][coordy].getText() + "_HIT");
     }
     if(message.getHitOrMiss().toString() == "MISS") {
-      opponentShipGridArray[coordx][coordy].setBackground(Color.WHITE);
+      opponentShipGridArray[coordx][coordy].setBackground(opponentShipMiss);
       opponentShipGridArray[coordx][coordy].setText(
           opponentShipGridArray[coordx][coordy].getText() + "_MISS");
     }
@@ -479,7 +489,7 @@ public class userInterface extends View {
     displayNotification("Opponent attacked you on " +  convertCoordinate(message.getCoordinate()) + "\n"
         + "It was a " + message.getHitOrMiss());
     if(message.getHitOrMiss().toString() == "HIT") {
-      playerShipGridArray[coordx][coordy].setBackground(Color.RED);
+      playerShipGridArray[coordx][coordy].setBackground(playerShipHit);
       playerShipGridArray[coordx][coordy].setText(
           playerShipGridArray[coordx][coordy].getText() + "_HIT");
     }
@@ -511,7 +521,7 @@ public class userInterface extends View {
       for (int j = 0; j < playerShipGridArray.length; j++) {
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         playerShipGridArray[i][j].setText(buttonLabel);
-        playerShipGridArray[i][j].setBackground(Color.CYAN);
+        playerShipGridArray[i][j].setBackground(playerBackground);
         playerShipGridArray[i][j].setEnabled(true);
       }
     }
@@ -520,7 +530,7 @@ public class userInterface extends View {
       for (int j = 0; j < opponentShipGridArray.length; j++) {
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         opponentShipGridArray[i][j].setText(buttonLabel);
-        opponentShipGridArray[i][j].setBackground(Color.LIGHT_GRAY);
+        opponentShipGridArray[i][j].setBackground(opponentBackground);
         opponentShipGridArray[i][j].setEnabled(true);
       }
     }
