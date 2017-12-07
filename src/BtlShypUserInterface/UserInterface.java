@@ -201,7 +201,7 @@ public class UserInterface extends View {
   }
   
   private JLabel yourBoard() {
-    yourBoard = new JLabel("Your Board", SwingConstants.LEFT);
+    yourBoard = new JLabel("Your Board", SwingConstants.CENTER);
     yourBoard.setFont(CAMBRIA_BIG_BOLD);
     return yourBoard;
   }
@@ -213,7 +213,7 @@ public class UserInterface extends View {
   }
   
   private JLabel opponentBoard() {
-    opponentBoard = new JLabel("Opponent Board", SwingConstants.RIGHT);
+    opponentBoard = new JLabel("Opponent Board", SwingConstants.CENTER);
     opponentBoard.setFont(CAMBRIA_BIG_BOLD);
     return opponentBoard;
   }
