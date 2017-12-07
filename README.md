@@ -1,2 +1,2 @@
-# BtlShyp-GUI-Experimental
-Sandbox for working on the BtlShyp GUI
+# Jonathan Mirabile CS3230 Final Project - BtlShyp
+GUI for BtlShyp final project
