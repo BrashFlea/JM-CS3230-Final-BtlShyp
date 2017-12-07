@@ -85,6 +85,8 @@ public class userInterface extends View {
   
   private JPanel playerShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
+    String BUTTON_NO_WRAP_CONSTRAINTS = "wrap, grow, width 120, height 120";
+    String BUTTON__WRAP_CONSTRAINTS = "grow, width 120, height 120";
 
     String[] colLabels = {"A","B","C","D","E"};
     String buttonLabel = "";
@@ -94,18 +96,25 @@ public class userInterface extends View {
         Coordinate currentLocation = new Coordinate(i,j);
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         BtlButton button = new BtlButton(buttonLabel, currentLocation);
+        button.setContentAreaFilled(false);
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        button.setOpaque(true);
+        button.setBackground(Color.CYAN);
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             setShipCoordinates(button, e);
+            button.setBackground(Color.gray);
           }
         });
           
         if (j == 4) {
-          shipGrid.add(button, "wrap, grow, width 120, height 120"); 
+          BUTTON_NO_WRAP_CONSTRAINTS += ",id player" + buttonLabel;
+          shipGrid.add(button, BUTTON_NO_WRAP_CONSTRAINTS ); 
         }
         else {
-          shipGrid.add(button, "grow, width 120, height 120");
+          BUTTON__WRAP_CONSTRAINTS += ",id player" + buttonLabel;
+          shipGrid.add(button, BUTTON__WRAP_CONSTRAINTS);
         }
       }
     }
@@ -114,6 +123,8 @@ public class userInterface extends View {
   
   private JPanel opponentShipGridArea() {
     JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
+    String BUTTON_NO_WRAP_CONSTRAINTS = "wrap, grow, width 120, height 120";
+    String BUTTON__WRAP_CONSTRAINTS = "grow, width 120, height 120";
     
     String[] colLabels = {"A","B","C","D","E"};
     String buttonLabel = "";
@@ -123,6 +134,9 @@ public class userInterface extends View {
         Coordinate currentLocation = new Coordinate(i,j);
         buttonLabel = colLabels[j] + Integer.toString(i+1);
         BtlButton button = new BtlButton(buttonLabel, currentLocation);
+        button.setContentAreaFilled(false);
+        button.setBorder(BorderFactory.createRaisedBevelBorder());
+        button.setOpaque(true);
         
         button.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -131,10 +145,12 @@ public class userInterface extends View {
         });
         
         if (j == 4) {
-          shipGrid.add(button, "wrap, grow, width 120, height 120"); 
+          BUTTON_NO_WRAP_CONSTRAINTS += ",id opponent" + buttonLabel;
+          shipGrid.add(button, BUTTON_NO_WRAP_CONSTRAINTS); 
         }
         else {
-          shipGrid.add(button, "grow, width 120, height 120");
+          BUTTON__WRAP_CONSTRAINTS += ",id opponent" + buttonLabel;
+          shipGrid.add(button, BUTTON__WRAP_CONSTRAINTS);
         }
       }
     }
@@ -170,13 +186,6 @@ public class userInterface extends View {
     return chatOutput;
   }
   
-  /*
-  private JPanel titleHeader() {
-    JPanel titleHeader = new JPanel(new MigLayout());
-    
-  }
-  */
-
   private JPanel checkForPlayagain() {
     JPanel playAgain = new JPanel(new MigLayout("debug, fill"));
     JLabel playerDialog = new JLabel("Would you like to play again?");
@@ -251,30 +260,7 @@ public class userInterface extends View {
     chatOutputScrollbar.getViewport().setViewPosition(bottomScrollPoint);
   }
   
-  /**
-   * Displays the results of your attack attempt on your opponent. Analogous to putting a pin in the 
-   * vertical portion of the traditional board game.
-   * @param hitOrMiss
-   * @param coordinate
-   */
-  public void displayAttack(AttackResponseMessage message) {
-    displayNotification("Attacked opponent on " + getAttackCoordinate() + "\n"
-        + "it was a " + message.getHitOrMiss());
-  };
-  
-  /**
-   * Displays the results of an opponent's attack on you. Analogous to putting a pin in a boat
-   * or the sea on the horizontal part of the traditional board game.
-   * @param hitOrMiss
-   * @param coordinate
-   */
-  public void displayOpponentAttack(AttackResponseMessage message) {
-    displayNotification("Opponent attacked you on " +  message.getCoordinate() + "\n"
-        + "it was a " + message.getHitOrMiss());
-    if(message.getShipSunk().toString() != "NONE") {
-      displayNotification("Your opponent sunk your " + message.getShipSunk());
-    }
-  };
+
   
   /**
    * Displays community chat messages that are broadcast to all
@@ -343,20 +329,9 @@ public class userInterface extends View {
     display("Please place this " + ship.getShipType());
     this.shipToPlace = ship;
     log.info("setShip: ship looks like {}", ship);
-    log.info("$$$$shipCoordinatesMaster: before clear {}", shipCoordinatesMaster);
     shipCoordinatesMaster.clear();
-    log.info("$$$$shipCoordinatesMaster: after clear {}", shipCoordinatesMaster);
   };
-  
-  /**
-   * Displays a properly placed ship in our board
-   * @param ship
-   */
-  @Override
-  public void displayShip(Ship ship) {
-    
-  };
-  
+   
   /**
    * Extract the coordinates from a BtlButton ship placement event
    * @param BtlButton
@@ -377,21 +352,29 @@ public class userInterface extends View {
    */
   @Override
   public void attemptSetShip(ActionEvent e) {
-    Ship setShipDebug = new Ship(shipToPlace.getShipType());
+    Ship setShipEventShip = new Ship(shipToPlace.getShipType());
     ArrayList<Coordinate> shipCoordinates = new ArrayList<Coordinate>(shipCoordinatesMaster);
     
-    setShipDebug.setShipCoordinates(shipCoordinates);
-    log.info("@@setShipDebug looks like: {}", setShipDebug);
-    log.info("@@setShipDebug size = {}, size of shipCoordinates =  {}", setShipDebug.getShipSize(), shipCoordinates.size());
+    setShipEventShip.setShipCoordinates(shipCoordinates);
+    log.info("setShipEventShip looks like: {}", setShipEventShip);
+    log.info("setShipEventShip size = {}, size of shipCoordinates =  {}", setShipEventShip.getShipSize(), shipCoordinates.size());
    
-    if (setShipDebug != null) {
-      SetShipEvent sse = new SetShipEvent(e, setShipDebug);
+    if (setShipEventShip != null) {
+      SetShipEvent sse = new SetShipEvent(e, setShipEventShip);
       if (setShipListener != null) {
-        log.info("@@Attempting to set ship: {}", setShipDebug);
+        log.info("@@Attempting to set ship: {}", setShipEventShip);
         setShipListener.setShipEventOccurred(sse);
       }   
     }
-    setShipDebug = null;
+    setShipEventShip = null;
+  };
+  
+  /**
+   * Displays a properly placed ship in our board
+   * @param ship
+   */
+  public void displayShip(Ship ship) {
+    
   };
   
   /**
@@ -418,10 +401,47 @@ public class userInterface extends View {
   };
   
   /**
+   * Displays the results of your attack attempt on your opponent. Analogous to putting a pin in the 
+   * vertical portion of the traditional board game.
+   * @param hitOrMiss
+   * @param coordinate
+   */
+  public void displayAttack(AttackResponseMessage message) {
+    displayNotification("Attacked opponent on " + convertCoordinate(getAttackCoordinate()) + "\n"
+        + "It was a " + message.getHitOrMiss());
+    if(message.getShipSunk().toString() != "NONE") {
+      displayNotification("You sunk your opponent's " + message.getShipSunk());
+    }
+  };
+  
+  /**
+   * Displays the results of an opponent's attack on you. Analogous to putting a pin in a boat
+   * or the sea on the horizontal part of the traditional board game.
+   * @param hitOrMiss
+   * @param coordinate
+   */
+  public void displayOpponentAttack(AttackResponseMessage message) {
+    displayNotification("Opponent attacked you on " +  convertCoordinate(message.getCoordinate()) + "\n"
+        + "It was a " + message.getHitOrMiss());
+    if(message.getShipSunk().toString() != "NONE") {
+      displayNotification("Your opponent sunk your " + message.getShipSunk());
+    }
+  };
+  
+  /**
    * Resets gui to gameless state
    */
   @Override
   public void resetGame() {};
+  
+  public String convertCoordinate(Coordinate coord) {
+    int x = coord.x;
+    int y = coord.y;
+    String[] colLabels = {"A","B","C","D","E"};
+    
+    String convertedCoordinate = colLabels[y] + (x + 1);
+    return convertedCoordinate;
+  }
 
   public static void main(String[] args) {
     userInterface btlshypgui = new userInterface();
