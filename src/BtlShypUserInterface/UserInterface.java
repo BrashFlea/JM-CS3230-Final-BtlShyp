@@ -68,10 +68,10 @@ public class UserInterface extends View {
    
     shipGridFrame = new JFrame("Jonathan Mirabile - BtlShyp");
     shipGridFrame.setIconImage(BTLSHYP_ICON.getImage());
-    gridBoard = new JPanel(new MigLayout("debug", "[|grow|]"));
-    textBoard = new JPanel(new MigLayout("debug, fillx"));
+    gridBoard = new JPanel(new MigLayout("", "[|grow|]"));
+    textBoard = new JPanel(new MigLayout("fillx"));
     gameBoard = new JPanel(new MigLayout());
-    chatArea = new JPanel(new MigLayout("debug, fill, height 600, width 400"));
+    chatArea = new JPanel(new MigLayout("fill, height 600, width 400"));
     chatOutputScrollbar = new JScrollPane(chatOutput(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     
     chatArea.add(chatOutputScrollbar, "wrap, grow, width 350, height 450");
@@ -96,7 +96,7 @@ public class UserInterface extends View {
   }
   
   private JPanel playerShipGridArea() {
-    JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
+    JPanel shipGrid = new JPanel(new MigLayout("fill"));
     String BUTTON_NO_WRAP_CONSTRAINTS = "wrap, grow, width 120, height 120";
     String BUTTON_WRAP_CONSTRAINTS = "grow, width 120, height 120";
 
@@ -134,7 +134,7 @@ public class UserInterface extends View {
   }
   
   private JPanel opponentShipGridArea() {
-    JPanel shipGrid = new JPanel(new MigLayout("debug, fill"));
+    JPanel shipGrid = new JPanel(new MigLayout("fill"));
     String BUTTON_NO_WRAP_CONSTRAINTS = "wrap, grow, width 120, height 120";
     String BUTTON_WRAP_CONSTRAINTS = "grow, width 120, height 120";
     
@@ -174,6 +174,7 @@ public class UserInterface extends View {
   private JTextArea chatInput() {
     chatInput = new JTextArea();
     chatInput.setLineWrap(true);
+    chatInput.setBorder(chatOutputScrollbar.getBorder());
 
     return chatInput;
   }
